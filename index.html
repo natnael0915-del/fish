@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Zone Manager</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#1b2430;--muted:#667085;--line:#e3e8ee;--brand:#0f766e;--brand-ink:#fff;--brand-soft:#d9f2ee;--warn:#b45309;--warn-soft:#fef3c7;--bad:#b42318;--bad-soft:#fee4e2;--good:#067647;--good-soft:#dcfae6;--rev:#0f766e;--exp:#d97706;--radius:12px}
+@media (prefers-color-scheme:dark){:root{--bg:#0e141b;--card:#16202b;--ink:#e8edf3;--muted:#93a1b2;--line:#263445;--brand:#2dd4bf;--brand-ink:#062b27;--brand-soft:#0f3a37;--warn-soft:#3b2a0b;--bad-soft:#3d1511;--good-soft:#0c3322;--warn:#fbbf24;--bad:#f97066;--good:#4ade80;--rev:#2dd4bf;--exp:#fbbf24}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}h1,h2,h3{margin:0 0 .5rem;line-height:1.2}h2{font-size:1.15rem}h3{font-size:1rem;color:var(--muted);font-weight:600}
+a{color:var(--brand)}
+.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.topbar .logo{font-weight:800}.topbar .who{margin-left:auto;text-align:right;font-size:.85rem;color:var(--muted)}
+.nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);scrollbar-width:none}
+.nav button{flex:none;background:none;border:0;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:600}.nav button.on{background:var(--brand-soft);color:var(--brand)}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}.gst{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row.sb{justify-content:space-between}
+.muted{color:var(--muted)}.small{font-size:.85rem}.right{text-align:right}.nowrap{white-space:nowrap}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.kpi .l{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.kpi .v{font-size:1.5rem;font-weight:750;margin-top:2px}.kpi .s{font-size:.8rem;color:var(--muted)}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px;font-weight:600}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px}
+.inline input,.inline select{width:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:650;min-height:42px}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}.btn.danger{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.btn.sm{padding:5px 10px;min-height:30px;font-size:.85rem}.btn.block{width:100%}.btn:disabled{opacity:.5;cursor:not-allowed}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.void td{text-decoration:line-through;color:var(--muted)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.75rem;font-weight:700;background:var(--brand-soft);color:var(--brand)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.bad{background:var(--bad-soft);color:var(--bad)}.pill.good{background:var(--good-soft);color:var(--good)}.pill.gray{background:var(--line);color:var(--muted)}
+.station{border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+.station.busy{border-color:var(--brand);background:var(--brand-soft)}.station .timer{font-size:1.6rem;font-weight:750;font-variant-numeric:tabular-nums}
+.bar-row{display:grid;grid-template-columns:130px 1fr 90px;gap:8px;align-items:center;margin:6px 0;font-size:.9rem}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--brand);border-radius:99px}.bar.exp>i{background:var(--exp)}
+.chart{display:flex;align-items:flex-end;gap:4px;height:160px;padding-top:8px;overflow-x:auto}
+.chart .col{flex:1 0 22px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:22px}
+.chart .pair{display:flex;align-items:flex-end;gap:2px;height:130px}.chart .pair i{display:block;width:9px;border-radius:3px 3px 0 0;min-height:1px}
+.chart .pair i.r{background:var(--rev)}.chart .pair i.e{background:var(--exp)}.chart .d{font-size:.65rem;color:var(--muted);margin-top:4px}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted)}.legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal{background:var(--card);border-radius:14px;padding:18px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;max-width:90vw}.toast.err{background:var(--bad);color:#fff}
+.login{max-width:380px;margin:10vh auto;padding:0 16px}.login h1{font-size:1.6rem;margin-bottom:4px}
+.empty{text-align:center;color:var(--muted);padding:24px}
+.err-box{background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:10px;margin-bottom:10px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:.8rem;max-height:340px}
+code{background:var(--bg);padding:1px 5px;border-radius:5px}
+@media (max-width:600px){.bar-row{grid-template-columns:90px 1fr 80px}main{padding:12px}}
+</style>
+</head>
+<body>
+<div id="app"><p style="padding:20px">Loading…</p></div>
+
+<script type="module">
+/* =====================================================================
+   1) PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings
+      > Your apps > Web app > "firebaseConfig"). See SETUP steps in the app.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBz_tReSaYYxl8TG6Ri3C7iWvtrpM5Q0l0",
+  authDomain: "fish-2e788.firebaseapp.com",
+  projectId: "fish-2e788",
+  storageBucket: "fish-2e788.firebasestorage.app",
+  messagingSenderId: "300814262964",
+  appId: "1:300814262964:web:3c6c427820e95f99402de1"
+};
+
+const RULES = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.active == true;
+    }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin() { return signedIn() && me().role == 'admin'; }
+    function isCashier() { return signedIn() && me().role == 'cashier'; }
+    function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+
+    match /users/{u} {
+      allow read: if request.auth != null && (request.auth.uid == u || isAdmin());
+      allow create: if isAdmin() || (request.auth != null && request.auth.uid == u
+                    && request.resource.data.role == 'admin'
+                    && !exists(/databases/$(database)/documents/settings/main));
+      allow update: if isAdmin() || (request.auth != null && request.auth.uid == u && onlyChanges(['mustChange']));
+    }
+    match /settings/{d} { allow read: if true; allow write: if isAdmin(); }
+    match /branches/{d} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /games/{d}    { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /stations/{d} { allow read: if signedIn(); allow write: if isAdmin(); }
+
+    match /shifts/{s} {
+      allow read: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid);
+      allow create: if isCashier() && request.resource.data.cashierId == request.auth.uid
+                    && request.resource.data.branchId == me().branchId && request.resource.data.status == 'open';
+      allow update: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid
+                    && resource.data.status == 'open' && request.resource.data.cashierId == request.auth.uid
+                    && request.resource.data.branchId == resource.data.branchId);
+    }
+    match /live/{s} {
+      allow get: if isAdmin() || (isCashier() && (resource == null || resource.data.branchId == me().branchId));
+      allow list: if isAdmin() || (isCashier() && resource.data.branchId == me().branchId);
+      allow create: if isCashier() && request.resource.data.branchId == me().branchId
+                    && request.resource.data.cashierId == request.auth.uid;
+      allow delete: if isAdmin() || (isCashier() && resource.data.branchId == me().branchId);
+    }
+    match /sales/{s} {
+      allow read: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid);
+      allow create: if isCashier() && request.resource.data.cashierId == request.auth.uid
+                    && request.resource.data.branchId == me().branchId;
+      allow update: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid
+                    && resource.data.voided == false && onlyChanges(['voided','voidReason']));
+    }
+    match /expenses/{s} {
+      allow read: if isAdmin() || (isCashier() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (isCashier() && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.branchId == me().branchId);
+      allow update: if isAdmin() || (isCashier() && resource.data.userId == request.auth.uid
+                    && resource.data.voided == false && onlyChanges(['voided']));
+    }
+    match /audit/{a} {
+      allow read: if isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+    }
+  }
+}`;
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword,
+         updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $app = document.getElementById('app');
+{ const rc = Element.prototype.replaceChildren; Element.prototype.replaceChildren = function (...k) { return rc.apply(this, k.filter((x) => x !== null && x !== undefined && x !== false)); }; }
+
+// ---------- tiny DOM helpers ----------
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+    else if (k === 'class') el.className = v;
+    else if (k === 'value') el.value = v;
+    else if (k === 'checked' || k === 'disabled' || k === 'selected') el[k] = !!v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  const add = (c) => { if (Array.isArray(c)) return c.forEach(add); if (c === null || c === undefined || c === false) return; el.append(c.nodeType ? c : document.createTextNode(String(c))); };
+  kids.forEach(add);
+  return el;
+}
+const S = { user: null, cfg: null, branches: [], games: [], stations: [], tab: null, booting: false };
+const DEFAULT_CFG = { currency: 'KES', paymentMethods: ['Cash', 'M-Pesa', 'Other'], expenseCategories: ['Rent', 'Electricity', 'Internet', 'Salaries', 'Repairs & Maintenance', 'Supplies', 'Prize Payout', 'Transport', 'Other'] };
+const pad = (n) => String(n).padStart(2, '0');
+const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const todayStr = (off = 0) => ymd(new Date(Date.now() + off * 864e5));
+const dayMs = (s) => new Date(s + 'T00:00:00').getTime();
+const fmt = (n) => Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+const money = (n) => `${fmt(n)} ${S.cfg ? S.cfg.currency : ''}`.trim();
+const fmtTime = (ms) => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const fmtDT = (ms) => new Date(ms).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const num = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
+const r2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+const isCash = (m) => String(m).toLowerCase() === 'cash';
+const clean = (v, max = 100) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+const byName = (a, b) => String(a.name).localeCompare(String(b.name));
+
+function toast(msg, isErr) { const t = h('div', { class: 'toast' + (isErr ? ' err' : '') }, msg); document.body.append(t); setTimeout(() => t.remove(), isErr ? 5000 : 2200); }
+const friendly = (e) => {
+  const c = e && e.code || '';
+  if (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found') || c.includes('invalid-email')) return 'Wrong username or password';
+  if (c.includes('too-many-requests')) return 'Too many attempts. Wait a few minutes and try again.';
+  if (c.includes('email-already-in-use')) return 'That username/email is already taken';
+  if (c.includes('weak-password')) return 'Password must be at least 6 characters';
+  if (c.includes('permission-denied')) return 'Not allowed. Check that the Firestore rules were published.';
+  if (c.includes('network')) return 'No internet connection';
+  return (e && e.message) || String(e);
+};
+const fail = (e) => { console.error(e); toast(friendly(e), true); };
+function modal(title, content, opts = {}) {
+  const close = () => bg.remove();
+  const bg = h('div', { class: 'modal-bg', onclick: (e) => { if (e.target === bg && !opts.sticky) close(); } }, h('div', { class: 'modal' }, h('h2', {}, title), content));
+  document.body.append(bg); const f = bg.querySelector('input,select'); if (f) f.focus(); return close;
+}
+const field = (label, input) => h('div', {}, h('label', {}, label), input);
+function select(options, value, attrs) {
+  return h('select', attrs, options.map((o) => { const [v, t] = Array.isArray(o) ? o : [o, o]; return h('option', { value: v, selected: String(v) === String(value) }, t); }));
+}
+async function guarded(btn, fn) { btn.disabled = true; try { await fn(); } catch (e) { fail(e); } finally { btn.disabled = false; } }
+function confirmBox(title, text, okLabel, onOk, danger) {
+  const ok = h('button', { class: 'btn ' + (danger ? 'danger' : 'primary'), onclick: () => guarded(ok, async () => { await onOk(); close(); }) }, okLabel);
+  const close = modal(title, h('div', {}, h('p', {}, text), h('div', { class: 'row', style: 'justify-content:flex-end' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
+}
+function reasonBox(title, onSubmit) {
+  const reason = h('input', { placeholder: 'Reason (required)', maxlength: 200 });
+  const ok = h('button', { class: 'btn danger', onclick: () => guarded(ok, async () => { if (!clean(reason.value, 200)) throw new Error('A reason is required'); await onSubmit(clean(reason.value, 200)); close(); }) }, 'Confirm');
+  const close = modal(title, h('div', {}, field('Reason', reason), h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
+}
+const kpi = (label, value, sub, cls) => h('div', { class: 'kpi' }, h('div', { class: 'l' }, label), h('div', { class: 'v ' + (cls || '') }, value), sub ? h('div', { class: 's' }, sub) : null);
+
+// ---------- setup guide (shown until the config above is filled in) ----------
+const configured = !String(FIREBASE_CONFIG.apiKey).startsWith('PASTE');
+if (!configured) {
+  const copy = h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(RULES).then(() => toast('Rules copied')) }, 'Copy rules');
+  $app.replaceChildren(h('main', {}, h('div', { class: 'card' },
+    h('h1', {}, 'Game Zone Manager: one-time setup'),
+    h('p', { class: 'muted' }, 'This page needs your Firebase project details. Do these steps once:'),
+    h('ol', {},
+      h('li', {}, 'Go to ', h('b', {}, 'console.firebase.google.com'), ' → Add project (any name; Analytics not needed).'),
+      h('li', {}, 'Build → ', h('b', {}, 'Authentication'), ' → Get started → enable ', h('b', {}, 'Email/Password'), '.'),
+      h('li', {}, 'Build → ', h('b', {}, 'Firestore Database'), ' → Create database → choose a nearby region → start in ', h('b', {}, 'production mode'), '.'),
+      h('li', {}, 'Firestore → ', h('b', {}, 'Rules'), ' tab → delete everything → paste the rules below → ', h('b', {}, 'Publish'), '.'),
+      h('li', {}, 'Project settings (gear icon) → Your apps → click the ', h('b', {}, '</>'), ' Web icon → register → copy the ', h('code', {}, 'firebaseConfig'), ' values.'),
+      h('li', {}, 'Open ', h('code', {}, 'index.html'), ', replace the 4 values in ', h('code', {}, 'FIREBASE_CONFIG'), ' at the top of the script, and save/upload it again.'),
+      h('li', {}, 'After publishing to GitHub Pages: Authentication → Settings → ', h('b', {}, 'Authorized domains'), ' → add ', h('code', {}, 'YOURNAME.github.io'), '.'),
+      h('li', {}, 'Open the page. The first screen will ask you to create the owner (admin) account.')),
+    h('div', { class: 'row sb' }, h('h3', {}, 'Firestore rules'), copy), h('pre', {}, RULES))));
+  throw new Error('Firebase not configured yet');
+}
+
+const app = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let secondaryApp = null;
+
+// ---------- data helpers ----------
+const C = (n) => collection(db, n);
+const D = (n, id) => doc(db, n, id);
+async function qlist(n, ...c) { const s = await getDocs(query(C(n), ...c)); return s.docs.map((d) => ({ id: d.id, ...d.data() })); }
+async function audit(action, detail = '') { try { await addDoc(C('audit'), { userId: S.user.id, userName: S.user.name, action, detail: String(detail).slice(0, 300), createdAt: Date.now() }); } catch (e) { console.warn(e); } }
+async function loadStatic() {
+  const [branches, games, stations, st] = await Promise.all([qlist('branches'), qlist('games'), qlist('stations'), getDoc(D('settings', 'main'))]);
+  S.branches = branches.sort(byName); S.games = games.sort(byName); S.stations = stations.sort(byName);
+  S.cfg = { ...DEFAULT_CFG, ...(st.exists() ? st.data() : {}) };
+}
+const branchName = (id) => (S.branches.find((b) => b.id === id) || {}).name || '?';
+const gameOf = (id) => S.games.find((g) => g.id === id);
+
+// ---------- auth ----------
+const toEmail = (u) => { u = clean(u, 80).toLowerCase(); return u.includes('@') ? u : `${u}@gamezone.app`; };
+async function doLogout() { S.user = null; S.tab = null; clearInterval(S.tick); await signOut(auth); }
+
+onAuthStateChanged(auth, async (u) => {
+  if (S.booting) return;
+  if (!u) { renderLogin(); return; }
+  try {
+    const snap = await getDoc(D('users', u.uid));
+    if (!snap.exists() || !snap.data().active) { await signOut(auth); renderLogin('This account is disabled or not set up. Contact the admin.'); return; }
+    S.user = { id: u.uid, ...snap.data() };
+    await loadStatic();
+    S.user.mustChange ? renderChangePassword(true) : render();
+  } catch (e) { console.error(e); renderLogin(friendly(e)); }
+});
+
+async function renderLogin(msg) {
+  const un = h('input', { placeholder: 'Username (or email)', autocomplete: 'username', autocapitalize: 'none' });
+  const pw = h('input', { type: 'password', placeholder: 'Password', autocomplete: 'current-password' });
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:16px' }, 'Log in');
+  const go = () => guarded(btn, async () => { try { await signInWithEmailAndPassword(auth, toEmail(un.value), pw.value); } catch (e) { throw new Error(friendly(e)); } });
+  btn.onclick = go; pw.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  const holder = h('div', {});
+  $app.replaceChildren(h('div', { class: 'login' }, h('h1', {}, '🎮 Game Zone Manager'), h('p', { class: 'muted' }, 'Log in to continue'), msg ? h('div', { class: 'err-box' }, msg) : null, holder,
+    h('div', { class: 'card' }, field('Username', un), field('Password', pw), btn)));
+  try {
+    const st = await getDoc(D('settings', 'main'));
+    if (!st.exists()) holder.append(h('div', { class: 'card' }, h('b', {}, 'First time here?'), h('p', { class: 'muted small' }, 'No owner account exists yet.'), h('button', { class: 'btn block', onclick: renderBootstrap }, 'Create the owner (admin) account')));
+  } catch (e) { holder.append(h('div', { class: 'err-box' }, 'Cannot reach the database: ' + friendly(e))); }
+}
+function renderBootstrap() {
+  const name = h('input', { placeholder: 'Your name' }); const email = h('input', { type: 'email', placeholder: 'you@example.com', autocapitalize: 'none' });
+  const pw = h('input', { type: 'password', placeholder: 'min 6 characters' }); const cur = h('input', { value: DEFAULT_CFG.currency, maxlength: 8 });
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:14px' }, 'Create owner account');
+  btn.onclick = () => guarded(btn, async () => {
+    if (!clean(name.value) || !email.value.includes('@')) throw new Error('Enter your name and a valid email');
+    S.booting = true;
+    try {
+      const em = clean(email.value, 120).toLowerCase(); let cred;
+      try { cred = await createUserWithEmailAndPassword(auth, em, pw.value); }
+      catch (e) { if (e && e.code === 'auth/email-already-in-use') cred = await signInWithEmailAndPassword(auth, em, pw.value); else throw e; } // retry after an earlier failed attempt
+      await setDoc(D('users', cred.user.uid), { name: clean(name.value, 80), username: clean(email.value, 120).toLowerCase(), email: clean(email.value, 120).toLowerCase(), role: 'admin', branchId: null, active: true, mustChange: false, createdAt: Date.now() });
+      await setDoc(D('settings', 'main'), { ...DEFAULT_CFG, currency: clean(cur.value, 8) || DEFAULT_CFG.currency });
+    } finally { S.booting = false; }
+    location.reload();
+  });
+  $app.replaceChildren(h('div', { class: 'login' }, h('h1', {}, 'Create owner account'), h('p', { class: 'muted' }, 'This becomes the main admin login. Use a real email you can access.'),
+    h('div', { class: 'card' }, field('Your name', name), field('Email (used to log in)', email), field('Password', pw), field('Currency label', cur), btn,
+      h('button', { class: 'btn block', style: 'margin-top:8px', onclick: () => renderLogin() }, 'Back'))));
+}
+function renderChangePassword(forced) {
+  const o = h('input', { type: 'password', autocomplete: 'current-password' }); const n = h('input', { type: 'password', autocomplete: 'new-password' }); const n2 = h('input', { type: 'password', autocomplete: 'new-password' });
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:16px' }, 'Save new password');
+  btn.onclick = () => guarded(btn, async () => {
+    if (n.value.length < 6) throw new Error('New password must be at least 6 characters');
+    if (n.value !== n2.value) throw new Error('New passwords do not match');
+    if (n.value === o.value) throw new Error('Choose a different password');
+    const u = auth.currentUser;
+    try { await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, o.value)); } catch (e) { throw new Error('Current password is wrong'); }
+    await updatePassword(u, n.value);
+    await updateDoc(D('users', S.user.id), { mustChange: false });
+    S.user.mustChange = false; await audit('change_password'); toast('Password changed'); render();
+  });
+  $app.replaceChildren(h('div', { class: 'login' }, h('h1', {}, 'Change your password'), h('p', { class: 'muted' }, forced ? 'For security you must set your own password before continuing.' : ''),
+    h('div', { class: 'card' }, field('Current password', o), field('New password (min 6 characters)', n), field('Repeat new password', n2), btn,
+      forced ? h('button', { class: 'btn block', style: 'margin-top:8px', onclick: doLogout }, 'Log out') : h('button', { class: 'btn block', style: 'margin-top:8px', onclick: () => render() }, 'Cancel'))));
+}
+
+// ---------- layout ----------
+const CASHIER_VIEWS = {}; const ADMIN_VIEWS = {};
+function render() {
+  const isAdmin = S.user.role === 'admin';
+  const tabs = isAdmin ? [['dash', 'Dashboard'], ['shifts', 'Shifts'], ['tx', 'Transactions'], ['branches', 'Branches'], ['staff', 'Staff'], ['games', 'Games & Stations'], ['settings', 'Settings'], ['audit', 'Activity log']]
+    : [['counter', 'Counter'], ['expenses', 'Expenses'], ['shift', 'My shift']];
+  if (!S.tab || !tabs.some((t) => t[0] === S.tab)) S.tab = tabs[0][0];
+  const main = h('main', {});
+  const nav = h('div', { class: 'nav' }, tabs.map(([id, label]) => h('button', { class: S.tab === id ? 'on' : '', onclick: () => { S.tab = id; render(); } }, label)));
+  const top = h('div', { class: 'topbar' }, h('span', { class: 'logo' }, '🎮 Game Zone'),
+    h('div', { class: 'who' }, h('div', {}, S.user.name, ' · ', isAdmin ? 'Admin' : `Cashier · ${branchName(S.user.branchId)}`),
+      h('a', { href: '#', onclick: (e) => { e.preventDefault(); renderChangePassword(false); } }, 'Password'), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); doLogout(); } }, 'Log out')));
+  $app.replaceChildren(top, nav, main);
+  clearInterval(S.tick);
+  main.append(h('p', { class: 'muted' }, 'Loading…'));
+  (isAdmin ? ADMIN_VIEWS : CASHIER_VIEWS)[S.tab](main).catch((e) => { console.error(e); main.replaceChildren(h('div', { class: 'card' }, h('p', { class: 'neg' }, friendly(e)))); });
+}
+const reload = async () => { await loadStatic(); render(); };
+
+// ====================================================================
+// CASHIER
+// ====================================================================
+Object.assign(CASHIER_VIEWS, { counter: cashierCounter, expenses: cashierExpenses, shift: cashierShift });
+
+async function currentShift() { const r = await qlist('shifts', where('cashierId', '==', S.user.id), where('status', '==', 'open')); return r[0] || null; }
+async function shiftData(shift) {
+  const [sales, exps] = await Promise.all([qlist('sales', where('cashierId', '==', S.user.id), where('shiftId', '==', shift.id)), qlist('expenses', where('userId', '==', S.user.id), where('shiftId', '==', shift.id))]);
+  sales.sort((a, b) => b.createdAt - a.createdAt); exps.sort((a, b) => b.createdAt - a.createdAt);
+  return { sales, exps, totals: totalsFor(shift, sales, exps) };
+}
+function totalsFor(shift, sales, exps) {
+  const sv = sales.filter((s) => !s.voided), ev = exps.filter((e) => !e.voided);
+  const group = (arr, key) => { const m = {}; arr.forEach((x) => { m[x[key]] = (m[x[key]] || 0) + x.amount; }); return Object.entries(m).map(([method, total]) => ({ method, total: r2(total) })); };
+  const cashSales = sv.filter((s) => isCash(s.method)).reduce((a, s) => a + s.amount, 0);
+  const cashExp = ev.filter((e) => isCash(e.paidFrom)).reduce((a, e) => a + e.amount, 0);
+  return { salesByMethod: group(sv, 'method'), expByMethod: group(ev, 'paidFrom'), salesTotal: r2(sv.reduce((a, s) => a + s.amount, 0)), expTotal: r2(ev.reduce((a, e) => a + e.amount, 0)), expectedCash: r2(shift.openingCash + cashSales - cashExp) };
+}
+function billing(minElapsed, rate, inc) { const m = Math.max(1, minElapsed); const billed = Math.ceil(m / inc) * inc; return { billed, amount: r2((billed / 60) * rate) }; }
+const hms = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60].map((x) => pad(x)).join(':'); };
+
+async function cashierCounter(main) {
+  const shift = await currentShift();
+  if (!shift) {
+    const cash = h('input', { type: 'number', min: 0, step: 'any', value: 0, inputmode: 'decimal' });
+    const btn = h('button', { class: 'btn primary block', style: 'margin-top:14px' }, 'Open shift');
+    btn.onclick = () => guarded(btn, async () => {
+      const oc = num(cash.value); if (!(oc >= 0)) throw new Error('Opening cash must be a number');
+      const b = S.branches.find((x) => x.id === S.user.branchId); if (!b || !b.active) throw new Error('Your branch is not active. Contact the admin.');
+      if (await currentShift()) throw new Error('You already have an open shift');
+      await addDoc(C('shifts'), { branchId: b.id, branchName: b.name, cashierId: S.user.id, cashierName: S.user.name, openedAt: Date.now(), openingCash: oc, status: 'open' });
+      await audit('open_shift'); toast('Shift opened'); render();
+    });
+    main.replaceChildren(h('div', { class: 'card', style: 'max-width:420px;margin:auto' }, h('h2', {}, 'Start your shift'), h('p', { class: 'muted' }, 'Count the cash in the drawer and enter it below.'), field(`Opening cash (${S.cfg.currency})`, cash), btn));
+    return;
+  }
+  const [{ sales, totals: t }, live] = await Promise.all([shiftData(shift), qlist('live', where('branchId', '==', S.user.branchId))]);
+  const liveBy = Object.fromEntries(live.map((l) => [l.stationId, l]));
+  const myStations = S.stations.filter((s) => s.branchId === S.user.branchId && s.active && (gameOf(s.gameId) || {}).active);
+  const timed = myStations.filter((s) => gameOf(s.gameId).pricingType === 'time');
+  const others = S.games.filter((g) => g.active && g.pricingType !== 'time');
+
+  const timers = [];
+  const stationCards = timed.map((st) => {
+    const g = gameOf(st.gameId); const sess = liveBy[st.id];
+    if (!sess) return h('div', { class: 'station' }, h('div', {}, h('b', {}, st.name), h('div', { class: 'muted small' }, `${g.name} · ${money(g.price)}/hr`)), h('span', { class: 'pill good', style: 'align-self:flex-start' }, 'Free'), h('button', { class: 'btn primary', onclick: () => startModal(st, g, shift) }, 'Start'));
+    const tm = h('div', { class: 'timer' }); const est = h('div', { class: 'muted small' });
+    timers.push(() => { const el = Date.now() - sess.startedAt; tm.textContent = hms(el); est.textContent = 'Now: ' + money(billing(el / 60000, sess.rate, sess.incMin).amount); });
+    return h('div', { class: 'station busy' }, h('div', {}, h('b', {}, st.name), h('div', { class: 'muted small' }, `${g.name} · started ${fmtTime(sess.startedAt)}${sess.customer ? ' · ' + sess.customer : ''}`)), tm, est,
+      h('div', { class: 'row' }, h('button', { class: 'btn primary', style: 'flex:1', onclick: () => stopModal(st, sess, shift) }, 'Stop & charge'),
+        Date.now() - sess.startedAt < 120000 ? h('button', { class: 'btn sm', onclick: () => confirmBox('Cancel session?', 'This removes the session without charging.', 'Cancel session', async () => { await deleteDoc(D('live', st.id)); await audit('cancel_session', st.name); render(); }, true) }, 'Undo') : null));
+  });
+  timers.forEach((f) => f()); S.tick = setInterval(() => timers.forEach((f) => f()), 1000);
+
+  const gameCards = others.map((g) => {
+    const gst = myStations.filter((s) => s.gameId === g.id);
+    const qty = h('input', { type: 'number', min: 1, step: g.pricingType === 'credit' ? 'any' : 1, value: 1, inputmode: 'decimal' });
+    const pay = select(S.cfg.paymentMethods, 'Cash');
+    const stSel = gst.length ? select([['', 'Table / unit (optional)'], ...gst.map((s) => [s.id, s.name])], '') : null;
+    const total = h('b', {}); const upd = () => { total.textContent = money(r2((num(qty.value) || 0) * g.price)); }; qty.addEventListener('input', upd); upd();
+    const chips = (g.pricingType === 'credit' ? [5, 10, 20, 50, 100] : [1, 2, 3, 4, 5]).map((n) => h('button', { class: 'btn sm', onclick: () => { qty.value = n; upd(); } }, n));
+    const btn = h('button', { class: 'btn primary block', style: 'margin-top:10px' }, 'Record sale');
+    btn.onclick = () => guarded(btn, async () => {
+      const q = num(qty.value); if (!(q > 0) || q > 1e6) throw new Error('Enter a valid quantity');
+      const st = stSel && stSel.value ? gst.find((s) => s.id === stSel.value) : null;
+      await addDoc(C('sales'), { branchId: S.user.branchId, branchName: branchName(S.user.branchId), shiftId: shift.id, cashierId: S.user.id, cashierName: S.user.name, gameId: g.id, gameName: g.name, stationId: st ? st.id : null, stationName: st ? st.name : '', description: '', qty: q, unitPrice: g.price, amount: r2(q * g.price), minutes: 0, method: pay.value, createdAt: Date.now(), voided: false, voidReason: '' });
+      toast(`Sold ${fmt(q)} ${g.unitLabel} · ${money(r2(q * g.price))}`); render();
+    });
+    return h('div', { class: 'card', style: 'margin:0' }, h('div', { class: 'row sb' }, h('b', {}, g.name), h('span', { class: 'muted small' }, `${money(g.price)} / ${g.unitLabel}`)), h('div', { class: 'row', style: 'margin:8px 0' }, chips),
+      field(`Quantity (${g.unitLabel}s)`, qty), stSel ? field('Where', stSel) : null, field('Payment', pay), h('div', { class: 'row sb', style: 'margin-top:10px' }, h('span', { class: 'muted' }, 'Total'), total), btn);
+  });
+
+  main.replaceChildren(
+    h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, kpi('Sales this shift', money(t.salesTotal)), kpi('Expenses', money(t.expTotal)), kpi('Cash expected', money(t.expectedCash), 'in drawer'), kpi('Shift opened', fmtTime(shift.openedAt))),
+    timed.length ? h('div', {}, h('h2', {}, 'Timed stations'), h('div', { class: 'grid gst', style: 'margin-bottom:16px' }, stationCards)) : null,
+    others.length ? h('div', {}, h('h2', {}, 'Sell credits / plays'), h('div', { class: 'grid g2', style: 'margin-bottom:16px' }, gameCards)) : null,
+    !timed.length && !others.length ? h('div', { class: 'card empty' }, 'No games or stations are set up for your branch yet. Ask the admin.') : null,
+    h('div', { class: 'card' }, h('h2', {}, 'Sales this shift'), sales.length ? h('div', { class: 'table-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, ['Time', 'Game', 'Details', 'Payment', 'Amount', ''].map((x, i) => h('th', { class: i === 4 ? 'num' : '' }, x)))),
+      h('tbody', {}, sales.map((s) => h('tr', { class: s.voided ? 'void' : '' }, h('td', {}, fmtTime(s.createdAt)), h('td', {}, s.gameName, s.stationName ? ` · ${s.stationName}` : ''), h('td', { class: 'small' }, s.description || `${fmt(s.qty)} × ${fmt(s.unitPrice)}`), h('td', {}, s.method), h('td', { class: 'num' }, fmt(s.amount)),
+        h('td', {}, s.voided ? h('span', { class: 'pill gray' }, 'voided') : h('button', { class: 'btn sm', onclick: () => reasonBox('Void this sale?', async (reason) => { await updateDoc(D('sales', s.id), { voided: true, voidReason: reason }); await audit('void_sale', `${s.gameName} ${s.amount}: ${reason}`); render(); }) }, 'Void'))))))) : h('p', { class: 'muted' }, 'No sales yet.')));
+}
+function startModal(st, g, shift) {
+  const name = h('input', { placeholder: 'Customer name (optional)', maxlength: 60 });
+  const ok = h('button', { class: 'btn primary', onclick: () => guarded(ok, async () => {
+    await runTransaction(db, async (tx) => {
+      const ref = D('live', st.id); const s = await tx.get(ref); if (s.exists()) throw new Error('This station is already in use');
+      tx.set(ref, { branchId: S.user.branchId, stationId: st.id, stationName: st.name, gameId: g.id, gameName: g.name, shiftId: shift.id, cashierId: S.user.id, customer: clean(name.value, 60), startedAt: Date.now(), rate: g.price, incMin: g.billingIncrement || 5 });
+    }); close(); render();
+  }) }, 'Start timer');
+  const close = modal(`Start ${st.name}`, h('div', {}, h('p', { class: 'muted' }, `${money(g.price)} per hour · billed in ${g.billingIncrement || 5}-minute steps`), field('Customer', name), h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
+}
+function stopModal(st, sess, shift) {
+  const el = (Date.now() - sess.startedAt) / 60000; const b = billing(el, sess.rate, sess.incMin); const pay = select(S.cfg.paymentMethods, 'Cash');
+  const ok = h('button', { class: 'btn primary', onclick: () => guarded(ok, async () => {
+    const result = await runTransaction(db, async (tx) => {
+      const ref = D('live', st.id); const s = await tx.get(ref); if (!s.exists()) throw new Error('Session already stopped');
+      const ss = s.data(); const now = Date.now(); const mins = Math.max(1, (now - ss.startedAt) / 60000); const bb = billing(mins, ss.rate, ss.incMin);
+      tx.delete(ref);
+      tx.set(doc(C('sales')), { branchId: ss.branchId, branchName: branchName(ss.branchId), shiftId: ss.shiftId, cashierId: S.user.id, cashierName: S.user.name, gameId: ss.gameId, gameName: ss.gameName, stationId: ss.stationId, stationName: ss.stationName,
+        description: `${Math.round(mins)} min played, billed ${bb.billed} min${ss.customer ? ' - ' + ss.customer : ''}`, qty: bb.billed / 60, unitPrice: ss.rate, amount: bb.amount, minutes: bb.billed, method: pay.value, createdAt: now, voided: false, voidReason: '' });
+      return bb.amount;
+    });
+    close(); toast(`Charged ${money(result)}`); render();
+  }) }, 'Confirm payment');
+  const close = modal(`Stop ${st.name}`, h('div', {}, h('div', { class: 'kpi', style: 'margin-bottom:8px' }, h('div', { class: 'l' }, 'Amount due'), h('div', { class: 'v' }, money(b.amount)), h('div', { class: 's' }, `${Math.round(el)} min played · billed ${b.billed} min`)),
+    field('Payment method', pay), h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Back'), ok)));
+}
+async function cashierExpenses(main) {
+  const shift = await currentShift();
+  if (!shift) { main.replaceChildren(h('div', { class: 'card empty' }, 'Open your shift on the Counter tab first.')); return; }
+  const { exps } = await shiftData(shift);
+  const cat = select(S.cfg.expenseCategories, S.cfg.expenseCategories[0]); const amt = h('input', { type: 'number', min: 0, step: 'any', inputmode: 'decimal' });
+  const from = select(S.cfg.paymentMethods, 'Cash'); const note = h('input', { placeholder: 'What was it for?', maxlength: 200 });
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:14px' }, 'Save expense');
+  btn.onclick = () => guarded(btn, async () => {
+    const a = num(amt.value); if (!(a > 0)) throw new Error('Enter a valid amount');
+    await addDoc(C('expenses'), { branchId: S.user.branchId, branchName: branchName(S.user.branchId), shiftId: shift.id, userId: S.user.id, userName: S.user.name, category: cat.value, amount: r2(a), paidFrom: from.value, note: clean(note.value, 200), createdAt: Date.now(), voided: false });
+    await audit('add_expense', `${cat.value} ${a}`); toast('Expense saved'); render();
+  });
+  main.replaceChildren(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h2', {}, 'Record an expense'), field('Category', cat), field(`Amount (${S.cfg.currency})`, amt), field('Paid from', from), field('Note', note), btn),
+    h('div', { class: 'card' }, h('h2', {}, 'This shift'), exps.length ? h('table', {}, h('tbody', {}, exps.map((e) => h('tr', { class: e.voided ? 'void' : '' }, h('td', {}, fmtTime(e.createdAt)), h('td', {}, e.category, e.note ? h('div', { class: 'muted small' }, e.note) : null), h('td', { class: 'num' }, fmt(e.amount)),
+      h('td', {}, e.voided ? null : h('button', { class: 'btn sm', onclick: () => confirmBox('Remove expense?', `${e.category} · ${money(e.amount)}`, 'Remove', async () => { await updateDoc(D('expenses', e.id), { voided: true }); await audit('void_expense', `${e.category} ${e.amount}`); render(); }, true) }, 'Remove')))))) : h('p', { class: 'muted' }, 'No expenses recorded yet.'))));
+}
+async function cashierShift(main) {
+  const shift = await currentShift();
+  if (!shift) { main.replaceChildren(h('div', { class: 'card empty' }, 'No open shift.')); return; }
+  const { totals: t } = await shiftData(shift);
+  const counted = h('input', { type: 'number', min: 0, step: 'any', inputmode: 'decimal', placeholder: 'Cash counted in drawer' }); const note = h('input', { placeholder: 'Note for the admin (optional)', maxlength: 300 });
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:14px' }, 'Close shift');
+  btn.onclick = () => {
+    const c = num(counted.value); if (!(c >= 0)) return toast('Enter the cash you counted', true);
+    confirmBox('Close your shift?', 'You will not be able to add more sales or expenses to it.', 'Close shift', async () => {
+      if ((await qlist('live', where('branchId', '==', S.user.branchId))).some((l) => l.shiftId === shift.id)) throw new Error('Stop all running sessions before closing the shift');
+      const fresh = await shiftData(shift); const ft = fresh.totals; const variance = r2(c - ft.expectedCash);
+      await updateDoc(D('shifts', shift.id), { status: 'closed', closedAt: Date.now(), expectedCash: ft.expectedCash, countedCash: c, variance, salesTotal: ft.salesTotal, expensesTotal: ft.expTotal, note: clean(note.value, 300) });
+      await audit('close_shift', `variance ${variance}`); S.tab = 'counter';
+      const done = modal('Shift closed', h('div', {}, h('div', { class: 'grid g2' }, kpi('Sales', money(ft.salesTotal)), kpi('Expenses', money(ft.expTotal)), kpi('Expected cash', money(ft.expectedCash)), kpi('Counted', money(c))),
+        h('p', { class: variance === 0 ? 'pos' : 'neg', style: 'font-weight:700' }, variance === 0 ? 'Cash matches perfectly.' : `Difference: ${variance > 0 ? '+' : ''}${money(variance)}`), h('button', { class: 'btn primary block', onclick: () => { done(); render(); } }, 'Done')), { sticky: true });
+    });
+  };
+  main.replaceChildren(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h2', {}, 'Shift summary'), h('p', { class: 'muted small' }, `Opened ${fmtDT(shift.openedAt)} with ${money(shift.openingCash)}`),
+    h('table', {}, h('tbody', {}, t.salesByMethod.map((m) => h('tr', {}, h('td', {}, `Sales · ${m.method}`), h('td', { class: 'num' }, fmt(m.total)))), t.expByMethod.map((m) => h('tr', {}, h('td', {}, `Expenses paid from ${m.method}`), h('td', { class: 'num' }, '−' + fmt(m.total)))),
+      h('tr', {}, h('td', {}, h('b', {}, 'Cash that should be in drawer')), h('td', { class: 'num' }, h('b', {}, money(t.expectedCash))))))),
+    h('div', { class: 'card' }, h('h2', {}, 'Close shift'), h('p', { class: 'muted small' }, 'Count all the cash in the drawer, then enter it. Differences are reported to the admin.'), field(`Counted cash (${S.cfg.currency})`, counted), field('Note', note), btn)));
+}
+
+// ====================================================================
+// ADMIN
+// ====================================================================
+Object.assign(ADMIN_VIEWS, { dash: adminDash, shifts: adminShifts, tx: adminTx, branches: adminBranches, staff: adminStaff, games: adminGames, settings: adminSettings, audit: adminAudit });
+const PRICING_LABEL = { time: 'Per hour (timer)', credit: 'Per credit / coin', fixed: 'Fixed price per play' };
+const F = { from: null, to: null, branch: '', type: 'sales' };
+const initF = () => { if (!F.from) { F.from = todayStr(); F.to = todayStr(); } return F; };
+
+function filterBar(onChange) {
+  const from = h('input', { type: 'date', value: F.from }); const to = h('input', { type: 'date', value: F.to });
+  const br = select([['', 'All branches'], ...S.branches.map((b) => [b.id, b.name])], F.branch || '');
+  const apply = () => { F.from = from.value || todayStr(); F.to = to.value || F.from; F.branch = br.value; onChange(); };
+  const preset = (label, f, t) => h('button', { class: 'btn sm', onclick: () => { F.from = f; F.to = t; F.branch = br.value; onChange(); } }, label);
+  const dow = (new Date().getDay() + 6) % 7;
+  return h('div', { class: 'card' }, h('div', { class: 'row inline' }, preset('Today', todayStr(), todayStr()), preset('Yesterday', todayStr(-1), todayStr(-1)), preset('This week', todayStr(-dow), todayStr()), preset('This month', todayStr().slice(0, 8) + '01', todayStr()), from, '→', to, br, h('button', { class: 'btn sm primary', onclick: apply }, 'Apply')));
+}
+async function fetchRange(extraDays = 0) {
+  const f = dayMs(F.from), t = dayMs(F.to) + 864e5 * (1 + extraDays);
+  const [sales, exps] = await Promise.all([qlist('sales', where('createdAt', '>=', f), where('createdAt', '<', t)), qlist('expenses', where('createdAt', '>=', f), where('createdAt', '<', t))]);
+  const keep = (x) => !F.branch || x.branchId === F.branch;
+  return { sales: sales.filter(keep), exps: exps.filter(keep), f, t };
+}
+function barList(rows, labelKey, valueKey, cls) {
+  const max = Math.max(1, ...rows.map((r) => r[valueKey]));
+  return rows.length ? rows.map((r) => h('div', { class: 'bar-row' }, h('span', { class: 'nowrap', style: 'overflow:hidden;text-overflow:ellipsis' }, r[labelKey]), h('div', { class: 'bar ' + (cls || '') }, h('i', { style: `width:${(r[valueKey] / max) * 100}%` })), h('span', { class: 'right' }, fmt(r[valueKey])))) : h('p', { class: 'muted' }, 'No data for this period.');
+}
+function groupSum(arr, keyFn, valFn = (x) => x.amount) { const m = new Map(); arr.forEach((x) => { const k = keyFn(x); m.set(k, (m.get(k) || 0) + valFn(x)); }); return [...m.entries()].map(([k, v]) => ({ k, v: r2(v) })).sort((a, b) => b.v - a.v); }
+
+async function adminDash(main) {
+  initF();
+  const [{ sales, exps }, openShifts, live] = await Promise.all([fetchRange(), qlist('shifts', where('status', '==', 'open')), qlist('live')]);
+  const sv = sales.filter((s) => !s.voided), ev = exps.filter((e) => !e.voided), voids = sales.filter((s) => s.voided);
+  const revenue = r2(sv.reduce((a, s) => a + s.amount, 0)), expenses = r2(ev.reduce((a, e) => a + e.amount, 0));
+  const timedSales = sv.filter((s) => s.minutes > 0), playHours = r2(timedSales.reduce((a, s) => a + s.minutes, 0) / 60);
+  const days = {}; sv.forEach((s) => { const d = ymd(new Date(s.createdAt)); (days[d] = days[d] || { revenue: 0, expenses: 0 }).revenue += s.amount; }); ev.forEach((e) => { const d = ymd(new Date(e.createdAt)); (days[d] = days[d] || { revenue: 0, expenses: 0 }).expenses += e.amount; });
+  const daily = Object.entries(days).sort((a, b) => a[0].localeCompare(b[0])); const maxDay = Math.max(1, ...daily.flatMap(([, d]) => [d.revenue, d.expenses]));
+  const chart = daily.length ? h('div', {}, h('div', { class: 'chart' }, daily.map(([d, v]) => h('div', { class: 'col', title: `${d}\nRevenue ${fmt(v.revenue)}\nExpenses ${fmt(v.expenses)}` }, h('div', { class: 'pair' }, h('i', { class: 'r', style: `height:${(v.revenue / maxDay) * 100}%` }), h('i', { class: 'e', style: `height:${(v.expenses / maxDay) * 100}%` })), h('div', { class: 'd' }, d.slice(5))))),
+    h('div', { class: 'legend' }, h('span', {}, h('b', { style: 'background:var(--rev)' }), 'Revenue'), h('span', {}, h('b', { style: 'background:var(--exp)' }), 'Expenses'))) : h('p', { class: 'muted' }, 'No activity in this period.');
+  const branchRows = S.branches.filter((b) => !F.branch || b.id === F.branch).map((b) => { const r = r2(sv.filter((s) => s.branchId === b.id).reduce((a, s) => a + s.amount, 0)), e = r2(ev.filter((x) => x.branchId === b.id).reduce((a, x) => a + x.amount, 0)); return { name: b.name, r, e, p: r2(r - e) }; }).sort((a, b) => b.r - a.r);
+  const cashiers = {}; sales.forEach((s) => { const c = (cashiers[s.cashierId] = cashiers[s.cashierId] || { name: s.cashierName, n: 0, revenue: 0, voids: 0 }); if (s.voided) c.voids++; else { c.n++; c.revenue += s.amount; } });
+  const byGame = groupSum(sv, (s) => s.gameName).map((x) => ({ name: x.k, revenue: x.v })), byCat = groupSum(ev, (e) => e.category).map((x) => ({ category: x.k, total: x.v })), byPay = groupSum(sv, (s) => s.method).map((x) => ({ method: x.k, total: x.v }));
+  const openList = openShifts.filter((s) => !F.branch || s.branchId === F.branch);
+  main.replaceChildren(filterBar(() => render()),
+    h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, kpi('Revenue', money(revenue), `${sv.length} sales`), kpi('Expenses', money(expenses), `${ev.length} ${ev.length === 1 ? 'entry' : 'entries'}`), kpi('Profit', money(r2(revenue - expenses)), 'revenue − expenses', revenue - expenses >= 0 ? 'pos' : 'neg'),
+      kpi('Play time', `${fmt(playHours)} h`, `${timedSales.length} ${timedSales.length === 1 ? 'session' : 'sessions'}`), kpi('Voided sales', String(voids.length), voids.length ? money(r2(voids.reduce((a, s) => a + s.amount, 0))) : 'none', voids.length ? 'neg' : '')),
+    h('div', { class: 'card' }, h('h2', {}, 'Right now'), openList.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('tbody', {}, openList.map((s) => h('tr', {}, h('td', {}, h('span', { class: 'pill good' }, 'Open'), ' ', s.branchName), h('td', {}, s.cashierName), h('td', { class: 'muted small' }, 'since ' + fmtTime(s.openedAt)))))))
+      : h('p', { class: 'muted' }, 'No shifts open.'), live.length ? h('p', { class: 'small muted', style: 'margin-top:8px' }, `${live.length} timed session(s) running: ` + live.map((x) => `${branchName(x.branchId)} ${x.stationName}`).join(', ')) : null),
+    h('div', { class: 'card' }, h('h2', {}, 'Revenue vs expenses by day'), chart),
+    h('div', { class: 'grid g2' }, h('div', { class: 'card', style: 'margin:0' }, h('h2', {}, 'By branch'), h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Branch'), h('th', { class: 'num' }, 'Revenue'), h('th', { class: 'num' }, 'Expenses'), h('th', { class: 'num' }, 'Profit'))),
+      h('tbody', {}, branchRows.map((b) => h('tr', {}, h('td', {}, b.name), h('td', { class: 'num' }, fmt(b.r)), h('td', { class: 'num' }, fmt(b.e)), h('td', { class: 'num ' + (b.p >= 0 ? 'pos' : 'neg') }, fmt(b.p)))))))), h('div', { class: 'card', style: 'margin:0' }, h('h2', {}, 'Revenue by game'), barList(byGame, 'name', 'revenue'))),
+    h('div', { class: 'grid g2', style: 'margin-top:16px' }, h('div', { class: 'card', style: 'margin:0' }, h('h2', {}, 'Expense breakdown'), barList(byCat, 'category', 'total', 'exp')), h('div', { class: 'card', style: 'margin:0' }, h('h2', {}, 'Payment methods'), barList(byPay, 'method', 'total'))),
+    h('div', { class: 'card', style: 'margin-top:16px' }, h('h2', {}, 'Cashier performance'), Object.keys(cashiers).length ? h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Cashier'), h('th', { class: 'num' }, 'Sales'), h('th', { class: 'num' }, 'Revenue'), h('th', { class: 'num' }, 'Voids'))),
+      h('tbody', {}, Object.values(cashiers).sort((a, b) => b.revenue - a.revenue).map((c) => h('tr', {}, h('td', {}, c.name), h('td', { class: 'num' }, c.n), h('td', { class: 'num' }, fmt(c.revenue)), h('td', { class: 'num ' + (c.voids ? 'neg' : '') }, c.voids)))))) : h('p', { class: 'muted' }, 'No data for this period.')));
+}
+
+async function adminShifts(main) {
+  initF();
+  const f = dayMs(F.from), t = dayMs(F.to) + 864e5;
+  const [shiftsAll, { sales, exps }] = await Promise.all([qlist('shifts', where('openedAt', '>=', f), where('openedAt', '<', t)), fetchRange(2)]);
+  const rows = shiftsAll.filter((s) => !F.branch || s.branchId === F.branch).sort((a, b) => b.openedAt - a.openedAt);
+  main.replaceChildren(filterBar(() => render()), h('div', { class: 'card' }, h('h2', {}, 'Shift reports'), rows.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Opened', 'Branch', 'Cashier', 'Status', 'Sales', 'Expenses', 'Expected cash', 'Counted', 'Difference', 'Note'].map((x, i) => h('th', { class: i >= 4 && i < 9 ? 'num' : '' }, x)))),
+    h('tbody', {}, rows.map((s) => {
+      const ss = sales.filter((x) => x.shiftId === s.id), ee = exps.filter((x) => x.shiftId === s.id); const tot = totalsFor(s, ss, ee); const nv = ss.filter((x) => x.voided).length; const closed = s.status === 'closed';
+      return h('tr', {}, h('td', { class: 'nowrap' }, fmtDT(s.openedAt)), h('td', {}, s.branchName), h('td', {}, s.cashierName), h('td', {}, h('span', { class: 'pill ' + (closed ? 'gray' : 'good') }, s.status)), h('td', { class: 'num' }, fmt(tot.salesTotal)), h('td', { class: 'num' }, fmt(tot.expTotal)),
+        h('td', { class: 'num' }, closed ? fmt(s.expectedCash) : '—'), h('td', { class: 'num' }, closed ? fmt(s.countedCash) : '—'), h('td', { class: 'num ' + (s.variance ? 'neg' : closed ? 'pos' : '') }, closed ? (s.variance > 0 ? '+' : '') + fmt(s.variance) : '—'), h('td', { class: 'small' }, s.note || '', nv ? h('span', { class: 'pill bad', style: 'margin-left:6px' }, `${nv} void`) : null));
+    })))) : h('p', { class: 'muted' }, 'No shifts in this period.')));
+}
+
+async function adminTx(main) {
+  initF(); const { sales, exps } = await fetchRange(); const isSales = F.type === 'sales';
+  const rows = (isSales ? sales : exps).sort((a, b) => b.createdAt - a.createdAt);
+  const typeSel = select([['sales', 'Sales'], ['expenses', 'Expenses']], F.type, { onchange: (e) => { F.type = e.target.value; render(); } });
+  const exportCsv = () => {
+    if (!rows.length) return toast('Nothing to export', true);
+    const keys = isSales ? ['createdAt', 'branchName', 'cashierName', 'gameName', 'stationName', 'description', 'qty', 'unitPrice', 'amount', 'method', 'voided', 'voidReason'] : ['createdAt', 'branchName', 'userName', 'category', 'note', 'amount', 'paidFrom', 'voided'];
+    const esc = (v) => { v = v === null || v === undefined ? '' : String(v); if (/^[=+\-@]/.test(v)) v = "'" + v; return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    const csv = [keys.join(','), ...rows.map((r) => keys.map((k) => esc(k === 'createdAt' ? new Date(r[k]).toISOString() : r[k])).join(','))].join('\n');
+    const a = h('a', { href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })), download: `${F.type}_${F.from}_${F.to}.csv` }); document.body.append(a); a.click(); a.remove();
+  };
+  const heads = isSales ? ['Time', 'Branch', 'Cashier', 'Game', 'Details', 'Payment', 'Amount', ''] : ['Time', 'Branch', 'By', 'Category', 'Note', 'Paid from', 'Amount', ''];
+  const action = (r) => {
+    if (r.voided) return h('span', { class: 'pill gray', title: r.voidReason || '' }, 'voided');
+    if (isSales) return h('button', { class: 'btn sm', onclick: () => reasonBox('Void this sale?', async (reason) => { await updateDoc(D('sales', r.id), { voided: true, voidReason: reason }); await audit('void_sale', `${r.gameName} ${r.amount}: ${reason}`); render(); }) }, 'Void');
+    return h('button', { class: 'btn sm', onclick: () => confirmBox('Remove expense?', `${r.category} · ${money(r.amount)}`, 'Remove', async () => { await updateDoc(D('expenses', r.id), { voided: true }); await audit('void_expense', `${r.category} ${r.amount}`); render(); }, true) }, 'Remove');
+  };
+  const cells = (r) => isSales ? [h('td', {}, r.cashierName), h('td', {}, r.gameName, r.stationName ? ` · ${r.stationName}` : ''), h('td', { class: 'small' }, r.description || `${fmt(r.qty)} × ${fmt(r.unitPrice)}`), h('td', {}, r.method)] : [h('td', {}, r.userName), h('td', {}, r.category), h('td', { class: 'small' }, r.note), h('td', {}, r.paidFrom)];
+  main.replaceChildren(filterBar(() => render()), h('div', { class: 'card' }, h('div', { class: 'row sb' }, h('div', { class: 'row inline' }, h('h2', { style: 'margin:0' }, 'Transactions'), typeSel), h('button', { class: 'btn sm', onclick: exportCsv }, 'Export CSV')),
+    rows.length ? h('div', { class: 'table-wrap', style: 'margin-top:8px' }, h('table', {}, h('thead', {}, h('tr', {}, heads.map((x, i) => h('th', { class: i === 6 ? 'num' : '' }, x)))), h('tbody', {}, rows.map((r) => h('tr', { class: r.voided ? 'void' : '' }, h('td', { class: 'nowrap' }, fmtDT(r.createdAt)), h('td', {}, r.branchName), cells(r), h('td', { class: 'num' }, fmt(r.amount)), h('td', {}, action(r))))))) : h('p', { class: 'muted' }, 'No records in this period.')),
+    h('div', { class: 'card' }, h('h3', {}, 'Record an expense for a branch (rent, salaries, etc.)'), adminExpenseForm()));
+}
+function adminExpenseForm() {
+  const br = select(S.branches.filter((b) => b.active).map((b) => [b.id, b.name]), ''); const cat = select(S.cfg.expenseCategories, S.cfg.expenseCategories[0]);
+  const amt = h('input', { type: 'number', min: 0, step: 'any', inputmode: 'decimal' }); const from = select(S.cfg.paymentMethods, 'Cash'); const note = h('input', { placeholder: 'Note', maxlength: 200 });
+  const btn = h('button', { class: 'btn primary', style: 'margin-top:10px' }, 'Add expense');
+  btn.onclick = () => guarded(btn, async () => {
+    const a = num(amt.value); if (!(a > 0)) throw new Error('Enter a valid amount'); if (!br.value) throw new Error('Choose a branch');
+    await addDoc(C('expenses'), { branchId: br.value, branchName: branchName(br.value), shiftId: null, userId: S.user.id, userName: S.user.name, category: cat.value, amount: r2(a), paidFrom: from.value, note: clean(note.value, 200), createdAt: Date.now(), voided: false });
+    await audit('add_expense', `${cat.value} ${a}`); toast('Expense added'); render();
+  });
+  return h('div', {}, h('div', { class: 'grid g4' }, field('Branch', br), field('Category', cat), field(`Amount (${S.cfg.currency})`, amt), field('Paid from', from)), field('Note', note), btn, h('p', { class: 'small muted' }, 'Head-office costs count in profit but not in any cashier’s drawer.'));
+}
+
+async function adminBranches(main) {
+  const name = h('input', { placeholder: 'Branch name', maxlength: 80 }); const loc = h('input', { placeholder: 'Location (optional)', maxlength: 120 });
+  const add = h('button', { class: 'btn primary', style: 'margin-top:10px' }, 'Add branch');
+  add.onclick = () => guarded(add, async () => {
+    const n = clean(name.value, 80); if (!n) throw new Error('Branch name required'); if (S.branches.some((b) => b.name.toLowerCase() === n.toLowerCase())) throw new Error('A branch with that name already exists');
+    await addDoc(C('branches'), { name: n, location: clean(loc.value, 120), active: true, createdAt: Date.now() }); await audit('create_branch', n); toast('Branch added'); await reload();
+  });
+  main.replaceChildren(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h2', {}, 'Branches'), h('table', {}, h('tbody', {}, S.branches.map((b) => h('tr', {}, h('td', {}, h('b', {}, b.name), h('div', { class: 'muted small' }, b.location)), h('td', {}, h('span', { class: 'pill ' + (b.active ? 'good' : 'gray') }, b.active ? 'Active' : 'Closed')), h('td', { class: 'right' }, h('button', { class: 'btn sm', onclick: () => editBranch(b) }, 'Edit'))))))),
+    h('div', { class: 'card' }, h('h2', {}, 'Add a branch'), field('Name', name), field('Location', loc), add)));
+}
+function editBranch(b) {
+  const name = h('input', { value: b.name }); const loc = h('input', { value: b.location || '' }); const act = h('input', { type: 'checkbox', checked: !!b.active, style: 'width:auto' });
+  const ok = h('button', { class: 'btn primary', onclick: () => guarded(ok, async () => { const n = clean(name.value, 80); if (!n) throw new Error('Name required'); await updateDoc(D('branches', b.id), { name: n, location: clean(loc.value, 120), active: act.checked }); await audit('update_branch', n); close(); await reload(); }) }, 'Save');
+  const close = modal('Edit branch', h('div', {}, field('Name', name), field('Location', loc), h('label', { class: 'row' }, act, ' Branch is active'), h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
+}
+
+async function adminStaff(main) {
+  const users = (await qlist('users')).sort((a, b) => (a.role + a.name).localeCompare(b.role + b.name));
+  const name = h('input', { maxlength: 80 }); const un = h('input', { maxlength: 60, autocapitalize: 'none', placeholder: 'e.g. hana (no spaces)' }); const em = h('input', { type: 'email', placeholder: 'Optional real email (enables password reset email)' });
+  const pw = h('input', { type: 'text', placeholder: 'min 6 characters' }); const role = select([['cashier', 'Cashier'], ['admin', 'Admin']], 'cashier'); const br = select(S.branches.filter((b) => b.active).map((b) => [b.id, b.name]), '');
+  const add = h('button', { class: 'btn primary', style: 'margin-top:10px' }, 'Create login');
+  add.onclick = () => guarded(add, async () => {
+    const nm = clean(name.value, 80); const email = clean(em.value, 120).toLowerCase() || toEmail(un.value); const uname = clean(un.value, 60).toLowerCase() || email;
+    if (!nm || (!un.value.trim() && !em.value.trim())) throw new Error('Name and username required'); if (/\s/.test(uname)) throw new Error('Username cannot contain spaces');
+    if (pw.value.length < 6) throw new Error('Password must be at least 6 characters'); if (role.value === 'cashier' && !br.value) throw new Error('Cashiers must be assigned to a branch');
+    if (!secondaryApp) secondaryApp = initializeApp(FIREBASE_CONFIG, 'staff-creator');
+    const sa = getAuth(secondaryApp); let cred;
+    try { cred = await createUserWithEmailAndPassword(sa, email, pw.value); } catch (e) { throw new Error(friendly(e)); }
+    try { await signOut(sa); } catch { /* ignore */ }
+    await setDoc(D('users', cred.user.uid), { name: nm, username: uname, email, role: role.value, branchId: role.value === 'cashier' ? br.value : null, active: true, mustChange: true, createdAt: Date.now() });
+    await audit('create_user', uname); toast('Login created. Share the username and password with them.'); render();
+  });
+  main.replaceChildren(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h2', {}, 'Staff logins'), h('div', { class: 'table-wrap' }, h('table', {}, h('tbody', {}, users.map((u) => h('tr', {}, h('td', {}, h('b', {}, u.name), h('div', { class: 'muted small' }, '@' + u.username)),
+    h('td', {}, h('span', { class: 'pill ' + (u.role === 'admin' ? 'warn' : '') }, u.role), u.branchId ? h('div', { class: 'small muted' }, branchName(u.branchId)) : null), h('td', {}, h('span', { class: 'pill ' + (u.active ? 'good' : 'gray') }, u.active ? 'Active' : 'Disabled')), h('td', { class: 'right' }, h('button', { class: 'btn sm', onclick: () => editUser(u) }, 'Edit')))))))),
+    h('div', { class: 'card' }, h('h2', {}, 'Add staff login'), field('Full name', name), field('Username', un), field('Email (optional)', em), field('Starting password', pw), field('Role', role), field('Branch (cashiers)', br), add, h('p', { class: 'small muted' }, 'Staff must set their own password at first login.'))));
+}
+function editUser(u) {
+  const name = h('input', { value: u.name }); const role = select([['cashier', 'Cashier'], ['admin', 'Admin']], u.role); const br = select(S.branches.map((b) => [b.id, b.name]), u.branchId || ''); const act = h('input', { type: 'checkbox', checked: !!u.active, style: 'width:auto' });
+  const real = u.email && !u.email.endsWith('@gamezone.app');
+  const reset = h('button', { class: 'btn sm', onclick: () => guarded(reset, async () => { if (!real) throw new Error('This login has no real email. Disable it and create a new login instead.'); await sendPasswordResetEmail(auth, u.email); toast('Password reset email sent'); }) }, 'Send password reset email');
+  const ok = h('button', { class: 'btn primary', onclick: () => guarded(ok, async () => {
+    if (u.id === S.user.id && (!act.checked || role.value !== 'admin')) throw new Error("You can't disable or demote your own account");
+    if (!act.checked && u.active && u.role === 'cashier') { if ((await qlist('shifts', where('cashierId', '==', u.id), where('status', '==', 'open'))).length) throw new Error('This cashier has an open shift. Ask them to close it first.'); }
+    await updateDoc(D('users', u.id), { name: clean(name.value, 80) || u.name, role: role.value, branchId: role.value === 'cashier' ? br.value : null, active: act.checked }); await audit('update_user', u.username); close(); toast('Saved'); render();
+  }) }, 'Save');
+  const close = modal(`Edit ${u.username}`, h('div', {}, field('Name', name), field('Role', role), field('Branch', br), h('label', { class: 'row' }, act, ' Account is active'), h('div', { style: 'margin-top:10px' }, reset), h('p', { class: 'small muted' }, real ? '' : 'Lost password? Disable this login and create a new one (history stays).'),
+    h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
+}
+
+async function adminGames(main) {
+  const name = h('input', { maxlength: 60, placeholder: 'e.g. Air Hockey, Pool, VR' }); const type = select(Object.entries(PRICING_LABEL), 'fixed');
+  const price = h('input', { type: 'number', min: 0, step: 'any', inputmode: 'decimal' }); const unit = h('input', { maxlength: 20, placeholder: 'e.g. coin, play, game' }); const inc = h('input', { type: 'number', min: 1, max: 120, value: 5 });
+  const priceLabel = h('label', {}, 'Price'); const incWrap = field('Billing step (minutes)', inc); const unitWrap = field('Unit name', unit);
+  const sync = () => { incWrap.style.display = type.value === 'time' ? '' : 'none'; unitWrap.style.display = type.value === 'time' ? 'none' : ''; priceLabel.textContent = type.value === 'time' ? `Price per hour (${S.cfg.currency})` : `Price per unit (${S.cfg.currency})`; }; type.addEventListener('change', sync); sync();
+  const add = h('button', { class: 'btn primary', style: 'margin-top:10px' }, 'Add game');
+  add.onclick = () => guarded(add, async () => {
+    const n = clean(name.value, 60); if (!n) throw new Error('Game name required'); if (S.games.some((g) => g.name.toLowerCase() === n.toLowerCase())) throw new Error('A game with that name already exists');
+    const p = num(price.value); if (!(p >= 0)) throw new Error('Price must be a number'); const bi = Math.round(num(inc.value) || 5); if (type.value === 'time' && (bi < 1 || bi > 120)) throw new Error('Billing step must be 1-120 minutes');
+    await addDoc(C('games'), { name: n, pricingType: type.value, price: p, unitLabel: clean(unit.value, 20) || (type.value === 'time' ? 'hour' : type.value === 'credit' ? 'credit' : 'play'), billingIncrement: type.value === 'time' ? bi : 5, active: true, createdAt: Date.now() });
+    await audit('create_game', n); toast('Game added'); await reload();
+  });
+  const stBranch = select(S.branches.filter((b) => b.active).map((b) => [b.id, b.name]), ''); const stGame = select(S.games.filter((g) => g.active).map((g) => [g.id, g.name]), ''); const stName = h('input', { maxlength: 60, placeholder: 'e.g. PS5 #2, Fish Table B' });
+  const addSt = h('button', { class: 'btn primary', style: 'margin-top:10px' }, 'Add station');
+  addSt.onclick = () => guarded(addSt, async () => {
+    const n = clean(stName.value, 60); if (!n) throw new Error('Station name required'); if (!stBranch.value || !stGame.value) throw new Error('Choose a branch and a game');
+    if (S.stations.some((s) => s.branchId === stBranch.value && s.name.toLowerCase() === n.toLowerCase())) throw new Error('That branch already has a station with this name');
+    await addDoc(C('stations'), { branchId: stBranch.value, gameId: stGame.value, name: n, active: true }); await audit('create_station', n); toast('Station added'); await reload();
+  });
+  main.replaceChildren(h('div', { class: 'card' }, h('h2', {}, 'Games'), h('p', { class: 'muted small' }, 'Each game has its own pricing style, so you can add any new game without changing the system. Price changes only affect future sales.'),
+    h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Game', 'Pricing', 'Price', 'Status', ''].map((x, i) => h('th', { class: i === 2 ? 'num' : '' }, x)))), h('tbody', {}, S.games.map((g) => h('tr', {}, h('td', {}, h('b', {}, g.name)), h('td', {}, PRICING_LABEL[g.pricingType], g.pricingType === 'time' ? h('span', { class: 'muted small' }, ` · ${g.billingIncrement}-min steps`) : null),
+      h('td', { class: 'num' }, `${fmt(g.price)} / ${g.unitLabel}`), h('td', {}, h('span', { class: 'pill ' + (g.active ? 'good' : 'gray') }, g.active ? 'Active' : 'Hidden')), h('td', { class: 'right' }, h('button', { class: 'btn sm', onclick: () => editGame(g) }, 'Edit'))))))),
+    h('h3', { style: 'margin-top:16px' }, 'Add a new game'), h('div', { class: 'grid g4' }, field('Name', name), field('Pricing style', type), h('div', {}, priceLabel, price), unitWrap, incWrap), add),
+    h('div', { class: 'card' }, h('h2', {}, 'Stations (machines / tables) per branch'), S.stations.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Branch', 'Game', 'Station', 'Status', ''].map((x) => h('th', {}, x)))),
+      h('tbody', {}, S.stations.map((s) => h('tr', {}, h('td', {}, branchName(s.branchId)), h('td', {}, (gameOf(s.gameId) || {}).name || '?'), h('td', {}, s.name), h('td', {}, h('span', { class: 'pill ' + (s.active ? 'good' : 'gray') }, s.active ? 'Active' : 'Disabled')),
+        h('td', { class: 'right' }, h('button', { class: 'btn sm', onclick: () => guarded2(async () => { if (s.active && (await qlist('live')).some((l) => l.stationId === s.id)) throw new Error('A session is running on this station'); await updateDoc(D('stations', s.id), { active: !s.active }); await reload(); }) }, s.active ? 'Disable' : 'Enable'))))))) : h('p', { class: 'muted' }, 'No stations yet.'),
+      h('h3', { style: 'margin-top:16px' }, 'Add a station'), h('div', { class: 'grid g4' }, field('Branch', stBranch), field('Game', stGame), field('Name', stName)), addSt));
+}
+async function guarded2(fn) { try { await fn(); } catch (e) { fail(e); } }
+function editGame(g) {
+  const name = h('input', { value: g.name }); const price = h('input', { type: 'number', min: 0, step: 'any', value: g.price }); const unit = h('input', { value: g.unitLabel }); const inc = h('input', { type: 'number', min: 1, max: 120, value: g.billingIncrement }); const act = h('input', { type: 'checkbox', checked: !!g.active, style: 'width:auto' });
+  const ok = h('button', { class: 'btn primary', onclick: () => guarded(ok, async () => {
+    const n = clean(name.value, 60); const p = num(price.value); if (!n || !(p >= 0)) throw new Error('Check the name and price');
+    await updateDoc(D('games', g.id), { name: n, price: p, unitLabel: clean(unit.value, 20) || g.unitLabel, billingIncrement: g.pricingType === 'time' ? Math.min(120, Math.max(1, Math.round(num(inc.value) || 5))) : g.billingIncrement, active: act.checked }); await audit('update_game', `${n} price=${p}`); close(); await reload();
+  }) }, 'Save');
+  const close = modal(`Edit ${g.name}`, h('div', {}, field('Name', name), field(g.pricingType === 'time' ? 'Price per hour' : 'Price per unit', price), g.pricingType === 'time' ? field('Billing step (minutes)', inc) : field('Unit name', unit), h('label', { class: 'row' }, act, ' Available to cashiers'),
+    h('p', { class: 'small muted' }, `Pricing style: ${PRICING_LABEL[g.pricingType]} (cannot be changed after creation).`), h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
+}
+async function adminSettings(main) {
+  const cur = h('input', { value: S.cfg.currency, maxlength: 8 }); const pm = h('textarea', { rows: 4 }, S.cfg.paymentMethods.join('\n')); const ec = h('textarea', { rows: 9 }, S.cfg.expenseCategories.join('\n'));
+  const btn = h('button', { class: 'btn primary', style: 'margin-top:14px' }, 'Save settings');
+  btn.onclick = () => guarded(btn, async () => {
+    const lines = (v) => [...new Set(v.split('\n').map((x) => clean(x, 40)).filter(Boolean))]; const p = lines(pm.value); if (!p.some(isCash)) p.unshift('Cash'); const e = lines(ec.value); if (!e.length) throw new Error('Need at least one expense category');
+    await setDoc(D('settings', 'main'), { currency: clean(cur.value, 8) || 'KES', paymentMethods: p, expenseCategories: e }); await audit('update_settings'); toast('Settings saved'); await reload();
+  });
+  main.replaceChildren(h('div', { class: 'card', style: 'max-width:560px' }, h('h2', {}, 'Settings'), field('Currency label', cur), field('Payment methods (one per line; Cash is always kept)', pm), field('Expense categories (one per line)', ec), btn));
+}
+async function adminAudit(main) {
+  const rows = (await qlist('audit')).sort((a, b) => b.createdAt - a.createdAt).slice(0, 200);
+  main.replaceChildren(h('div', { class: 'card' }, h('h2', {}, 'Activity log'), h('p', { class: 'muted small' }, 'Voids, cancelled sessions, price changes and other sensitive actions (latest 200).'), h('div', { class: 'table-wrap' }, h('table', {}, h('tbody', {}, rows.map((r) => h('tr', {}, h('td', { class: 'nowrap small' }, fmtDT(r.createdAt)), h('td', {}, r.userName || '—'), h('td', {}, h('span', { class: 'pill gray' }, r.action)), h('td', { class: 'small muted' }, r.detail))))))));
+}
+</script>
+</body>
+</html>
