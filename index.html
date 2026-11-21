@@ -4,55 +4,93 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Game Zone Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--ink:#1b2430;--muted:#667085;--line:#e3e8ee;--brand:#0f766e;--brand-ink:#fff;--brand-soft:#d9f2ee;--warn:#b45309;--warn-soft:#fef3c7;--bad:#b42318;--bad-soft:#fee4e2;--good:#067647;--good-soft:#dcfae6;--rev:#0f766e;--exp:#d97706;--radius:12px}
-@media (prefers-color-scheme:dark){:root{--bg:#0e141b;--card:#16202b;--ink:#e8edf3;--muted:#93a1b2;--line:#263445;--brand:#2dd4bf;--brand-ink:#062b27;--brand-soft:#0f3a37;--warn-soft:#3b2a0b;--bad-soft:#3d1511;--good-soft:#0c3322;--warn:#fbbf24;--bad:#f97066;--good:#4ade80;--rev:#2dd4bf;--exp:#fbbf24}}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-button,input,select,textarea{font:inherit;color:inherit}h1,h2,h3{margin:0 0 .5rem;line-height:1.2}h2{font-size:1.15rem}h3{font-size:1rem;color:var(--muted);font-weight:600}
+:root{--bg:#090e1f;--bg2:#0e1630;--card:#121b37;--card2:#18244a;--ink:#eaf0ff;--muted:#8d9bc2;--line:#25335f;
+--brand:#22e6a8;--brand2:#00b8ff;--brand-ink:#03140f;--brand-soft:rgba(34,230,168,.14);
+--warn:#ffb020;--warn-soft:rgba(255,176,32,.16);--bad:#ff5470;--bad-soft:rgba(255,84,112,.16);--good:#22e6a8;--good-soft:rgba(34,230,168,.16);
+--rev:#22e6a8;--exp:#ffb020;--radius:16px;--shadow:0 12px 32px rgba(0,0,0,.38);--grad:linear-gradient(135deg,var(--brand),var(--brand2));
+--display:'Rajdhani','Noto Sans Ethiopic',system-ui,sans-serif;--head:linear-gradient(120deg,#070b19,#101f4a)}
+:root[data-theme=light]{--bg:#edf2fa;--bg2:#e1e9f6;--card:#fff;--card2:#f4f8ff;--ink:#0c1530;--muted:#5a6a8b;--line:#d9e2f1;
+--brand:#00a97a;--brand2:#0a84ff;--brand-ink:#fff;--brand-soft:rgba(0,169,122,.12);--warn:#b45309;--warn-soft:#fff1d6;--bad:#d92d4b;--bad-soft:#ffe3e8;--good:#067a58;--good-soft:#d8f7ec;
+--rev:#00a97a;--exp:#e08a00;--shadow:0 10px 26px rgba(20,45,100,.10)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Ethiopic",sans-serif}
+body{background:radial-gradient(1100px 500px at 85% -10%,rgba(0,184,255,.10),transparent 60%),radial-gradient(900px 500px at -10% 0,rgba(34,230,168,.09),transparent 55%),var(--bg);min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0 0 .5rem;line-height:1.15;font-family:var(--display);letter-spacing:.02em}
+h1{font-size:1.9rem;text-transform:uppercase}h2{font-size:1.3rem;text-transform:uppercase}h3{font-size:1rem;color:var(--muted);font-weight:700}
 a{color:var(--brand)}
-.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
-.topbar .logo{font-weight:800}.topbar .who{margin-left:auto;text-align:right;font-size:.85rem;color:var(--muted)}
-.nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);scrollbar-width:none}
-.nav button{flex:none;background:none;border:0;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:600}.nav button.on{background:var(--brand-soft);color:var(--brand)}
-main{max-width:1100px;margin:0 auto;padding:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px}
-.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}.gst{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--head);color:#eaf0ff;border-bottom:3px solid transparent;border-image:var(--grad) 1;box-shadow:var(--shadow)}
+.topbar .logo{font:700 1.35rem var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.topbar .who{margin-left:auto;text-align:right;font-size:.82rem;color:#aab8e0}.topbar .who a{color:#7ef0cd}
+.tools{display:inline-flex;gap:6px}.tools button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:inherit;border-radius:999px;padding:5px 11px;cursor:pointer;font-weight:700;min-width:40px}
+.tools button:hover{background:rgba(255,255,255,.2)}
+.nav{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--line);scrollbar-width:none}
+.nav button{flex:none;background:transparent;border:1px solid transparent;padding:7px 16px;border-radius:999px;cursor:pointer;color:var(--muted);font:700 .95rem var(--display);letter-spacing:.06em;text-transform:uppercase}
+.nav button:hover{color:var(--ink)}.nav button.on{background:var(--grad);color:var(--brand-ink);box-shadow:0 6px 18px rgba(0,184,255,.25)}
+main{max-width:1120px;margin:0 auto;padding:18px 16px 40px}
+.card{background:linear-gradient(180deg,var(--card),var(--card));border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.gst{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row.sb{justify-content:space-between}
 .muted{color:var(--muted)}.small{font-size:.85rem}.right{text-align:right}.nowrap{white-space:nowrap}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.kpi .l{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.kpi .v{font-size:1.5rem;font-weight:750;margin-top:2px}.kpi .s{font-size:.8rem;color:var(--muted)}
+.kpi{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 14px 12px;box-shadow:var(--shadow)}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grad)}
+.kpi .ic{position:absolute;right:12px;top:8px;font-size:1.7rem;opacity:.9}
+.kpi .l{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:700}
+.kpi .v{font:700 1.85rem var(--display);margin-top:2px;letter-spacing:.01em}.kpi .s{font-size:.8rem;color:var(--muted)}
 .pos{color:var(--good)}.neg{color:var(--bad)}
-label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px;font-weight:600}
-input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px}
+label{display:block;font-size:.78rem;color:var(--muted);margin:11px 0 4px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--bg2);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand2);outline-offset:1px}
 .inline input,.inline select{width:auto}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:650;min-height:42px}
-.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}.btn.danger{background:var(--bad-soft);color:var(--bad);border-color:transparent}
-.btn.sm{padding:5px 10px;min-height:30px;font-size:.85rem}.btn.block{width:100%}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card2);cursor:pointer;font-weight:700;min-height:44px;transition:transform .08s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--grad);color:var(--brand-ink);border-color:transparent;box-shadow:0 8px 20px rgba(0,184,255,.25);font-family:var(--display);font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase}
+.btn.danger{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.btn.sm{padding:5px 11px;min-height:32px;font-size:.84rem;border-radius:10px}.btn.block{width:100%}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.92rem}
-th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--brand-soft)}
 tr.void td{text-decoration:line-through;color:var(--muted)}
-.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.75rem;font-weight:700;background:var(--brand-soft);color:var(--brand)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:800;letter-spacing:.04em;background:var(--brand-soft);color:var(--brand)}
 .pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.bad{background:var(--bad-soft);color:var(--bad)}.pill.good{background:var(--good-soft);color:var(--good)}.pill.gray{background:var(--line);color:var(--muted)}
-.station{border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--card);display:flex;flex-direction:column;gap:8px}
-.station.busy{border-color:var(--brand);background:var(--brand-soft)}.station .timer{font-size:1.6rem;font-weight:750;font-variant-numeric:tabular-nums}
-.bar-row{display:grid;grid-template-columns:130px 1fr 90px;gap:8px;align-items:center;margin:6px 0;font-size:.9rem}
-.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--brand);border-radius:99px}.bar.exp>i{background:var(--exp)}
-.chart{display:flex;align-items:flex-end;gap:4px;height:160px;padding-top:8px;overflow-x:auto}
-.chart .col{flex:1 0 22px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:22px}
-.chart .pair{display:flex;align-items:flex-end;gap:2px;height:130px}.chart .pair i{display:block;width:9px;border-radius:3px 3px 0 0;min-height:1px}
+.station{border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--card);display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.station.busy{border-color:var(--brand);background:linear-gradient(160deg,var(--brand-soft),var(--card));animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,230,168,.0),var(--shadow)}50%{box-shadow:0 0 22px 2px rgba(34,230,168,.28),var(--shadow)}}
+.station .timer{font:700 2.1rem var(--display);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.bar-row{display:grid;grid-template-columns:130px 1fr 90px;gap:8px;align-items:center;margin:7px 0;font-size:.9rem}
+.bar{height:11px;background:var(--line);border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--grad);border-radius:99px}.bar.exp>i{background:linear-gradient(90deg,#ffb020,#ff6a3d)}
+.chart{display:flex;align-items:flex-end;gap:4px;height:170px;padding-top:8px;overflow-x:auto}
+.chart .col{flex:1 0 24px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:24px}
+.chart .pair{display:flex;align-items:flex-end;gap:2px;height:140px}.chart .pair i{display:block;width:10px;border-radius:4px 4px 0 0;min-height:1px}
 .chart .pair i.r{background:var(--rev)}.chart .pair i.e{background:var(--exp)}.chart .d{font-size:.65rem;color:var(--muted);margin-top:4px}
 .legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted)}.legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
-.modal{background:var(--card);border-radius:14px;padding:18px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;max-width:90vw}.toast.err{background:var(--bad);color:#fff}
-.login{max-width:380px;margin:10vh auto;padding:0 16px}.login h1{font-size:1.6rem;margin-bottom:4px}
-.empty{text-align:center;color:var(--muted);padding:24px}
-.err-box{background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:10px;margin-bottom:10px}
-pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:.8rem;max-height:340px}
-code{background:var(--bg);padding:1px 5px;border-radius:5px}
-@media (max-width:600px){.bar-row{grid-template-columns:90px 1fr 80px}main{padding:12px}}
+.modal-bg{position:fixed;inset:0;background:rgba(3,6,16,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;width:100%;max-width:460px;max-height:92vh;overflow:auto;box-shadow:var(--shadow)}
+.modal.wide{max-width:760px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:12px;z-index:30;max-width:90vw;font-weight:600;box-shadow:var(--shadow)}.toast.err{background:var(--bad);color:#fff}
+.login{max-width:400px;margin:7vh auto;padding:0 16px}
+.hero{text-align:center;margin-bottom:18px}.hero .big{font:700 2.6rem var(--display);letter-spacing:.08em;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.hero .ico{font-size:2.6rem;filter:drop-shadow(0 6px 14px rgba(0,184,255,.5))}
+.floating-tools{position:fixed;top:12px;right:12px;z-index:6}.floating-tools .tools button{background:var(--card);border-color:var(--line);color:var(--ink)}
+.empty{text-align:center;color:var(--muted);padding:26px}
+.err-box{background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:12px;margin-bottom:10px}
+.warn-box{background:var(--warn-soft);color:var(--warn);padding:10px 12px;border-radius:12px;margin-bottom:14px;font-weight:600}
+pre{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;font-size:.8rem;max-height:340px}
+code{background:var(--bg2);padding:1px 6px;border-radius:6px}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ph{background:var(--card2);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}
+.ph img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#000}.ph div{padding:6px 8px;font-size:.75rem}
+.ph.flag{border-color:var(--bad)}
+.shot{position:relative}.shot img{width:100%;border-radius:10px;display:block}.shot button{position:absolute;top:6px;right:6px}
+video.cam{width:100%;border-radius:14px;background:#000;max-height:58vh}
+.seg{display:flex;gap:8px;flex-wrap:wrap}.seg label{display:flex;align-items:flex-start;gap:8px;text-transform:none;letter-spacing:0;font-size:.92rem;color:var(--ink);font-weight:600;margin:6px 0;padding:10px;border:1px solid var(--line);border-radius:12px;flex:1 1 100%}
+.seg input{width:auto;margin-top:3px}
+@media (max-width:600px){.bar-row{grid-template-columns:90px 1fr 80px}main{padding:12px}.topbar .who div:first-child{display:none}}
 </style>
 </head>
 <body>
@@ -99,11 +137,14 @@ service cloud.firestore {
 
     match /shifts/{s} {
       allow read: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid);
-      allow create: if isCashier() && request.resource.data.cashierId == request.auth.uid
-                    && request.resource.data.branchId == me().branchId && request.resource.data.status == 'open';
+      // a cashier can only open a shift after the first start photo of that shift was saved
+      allow create: if isAdmin() || (isCashier() && request.resource.data.cashierId == request.auth.uid
+                    && request.resource.data.branchId == me().branchId && request.resource.data.status == 'open'
+                    && exists(/databases/$(database)/documents/photos/$(s + '_start_0')));
       allow update: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid
                     && resource.data.status == 'open' && request.resource.data.cashierId == request.auth.uid
                     && request.resource.data.branchId == resource.data.branchId);
+      allow delete: if isAdmin();
     }
     match /live/{s} {
       allow get: if isAdmin() || (isCashier() && (resource == null || resource.data.branchId == me().branchId));
@@ -114,10 +155,11 @@ service cloud.firestore {
     }
     match /sales/{s} {
       allow read: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid);
-      allow create: if isCashier() && request.resource.data.cashierId == request.auth.uid
-                    && request.resource.data.branchId == me().branchId;
+      allow create: if isAdmin() || (isCashier() && request.resource.data.cashierId == request.auth.uid
+                    && request.resource.data.branchId == me().branchId);
       allow update: if isAdmin() || (isCashier() && resource.data.cashierId == request.auth.uid
                     && resource.data.voided == false && onlyChanges(['voided','voidReason']));
+      allow delete: if isAdmin();
     }
     match /expenses/{s} {
       allow read: if isAdmin() || (isCashier() && resource.data.userId == request.auth.uid);
@@ -125,10 +167,25 @@ service cloud.firestore {
                     && request.resource.data.branchId == me().branchId);
       allow update: if isAdmin() || (isCashier() && resource.data.userId == request.auth.uid
                     && resource.data.voided == false && onlyChanges(['voided']));
+      allow delete: if isAdmin();
+    }
+    // photo details (small thumbnail) and the full picture are kept in two places so lists stay fast
+    match /photos/{p} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() || (isCashier() && request.resource.data.cashierId == request.auth.uid
+                    && request.resource.data.branchId == me().branchId
+                    && request.resource.data.serverAt == request.time);
+      allow delete: if isAdmin();
+    }
+    match /photoData/{p} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() || isCashier();
+      allow delete: if isAdmin();
     }
     match /audit/{a} {
       allow read: if isAdmin();
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAdmin() || (signedIn() && request.resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
     }
   }
 }`;
@@ -136,7 +193,7 @@ service cloud.firestore {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword,
          updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction }
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $app = document.getElementById('app');
@@ -187,7 +244,7 @@ const friendly = (e) => {
 const fail = (e) => { console.error(e); toast(friendly(e), true); };
 function modal(title, content, opts = {}) {
   const close = () => bg.remove();
-  const bg = h('div', { class: 'modal-bg', onclick: (e) => { if (e.target === bg && !opts.sticky) close(); } }, h('div', { class: 'modal' }, h('h2', {}, title), content));
+  const bg = h('div', { class: 'modal-bg', onclick: (e) => { if (e.target === bg && !opts.sticky) close(); } }, h('div', { class: 'modal' + (opts.wide ? ' wide' : '') }, h('h2', {}, title), content));
   document.body.append(bg); const f = bg.querySelector('input,select'); if (f) f.focus(); return close;
 }
 const field = (label, input) => h('div', {}, h('label', {}, label), input);
@@ -204,7 +261,207 @@ function reasonBox(title, onSubmit) {
   const ok = h('button', { class: 'btn danger', onclick: () => guarded(ok, async () => { if (!clean(reason.value, 200)) throw new Error('A reason is required'); await onSubmit(clean(reason.value, 200)); close(); }) }, 'Confirm');
   const close = modal(title, h('div', {}, field('Reason', reason), h('div', { class: 'row', style: 'justify-content:flex-end;margin-top:12px' }, h('button', { class: 'btn', onclick: () => close() }, 'Cancel'), ok)));
 }
-const kpi = (label, value, sub, cls) => h('div', { class: 'kpi' }, h('div', { class: 'l' }, label), h('div', { class: 'v ' + (cls || '') }, value), sub ? h('div', { class: 's' }, sub) : null);
+// Amharic translations. English text is the key; anything missing simply stays in English.
+const AM = {
+  'Dashboard': 'ዳሽቦርድ', 'Shifts': 'ፈረቃዎች', 'Transactions': 'ግብይቶች', 'Branches': 'ቅርንጫፎች', 'Staff': 'ሠራተኞች', 'Games & Stations': 'ጨዋታዎች እና ማሽኖች', 'Photos': 'ፎቶዎች',
+  'Backup & erase': 'ምትኬ እና ማጥፋት', 'Settings': 'ቅንብሮች', 'Activity log': 'የእንቅስቃሴ መዝገብ', 'Counter': 'መሸጫ', 'Expenses': 'ወጪዎች', 'My shift': 'ፈረቃዬ',
+  'Game Zone': 'ጌም ዞን', '🎮 Game Zone': '🎮 ጌም ዞን', 'Log in to continue': 'ለመቀጠል ይግቡ', 'Username': 'የተጠቃሚ ስም', 'Username (or email)': 'የተጠቃሚ ስም (ወይም ኢሜይል)', 'Password': 'የይለፍ ቃል', 'Log in': 'ግባ', 'Log out': 'ውጣ',
+  'First time here?': 'እዚህ ለመጀመሪያ ጊዜ ነዎት?', 'No owner account exists yet.': 'እስካሁን የባለቤት መለያ የለም።', 'Create the owner (admin) account': 'የባለቤት (አስተዳዳሪ) መለያ ፍጠር', 'Create owner account': 'የባለቤት መለያ ፍጠር',
+  'Back': 'ተመለስ', 'Your name': 'ስምዎ', 'Email (used to log in)': 'ኢሜይል (ለመግባት የሚያገለግል)', 'This becomes the main admin login. Use a real email you can access.': 'ይህ ዋናው የአስተዳዳሪ መግቢያ ይሆናል። የሚደርሱበትን እውነተኛ ኢሜይል ይጠቀሙ።',
+  'min 6 characters': 'ቢያንስ 6 ቁምፊዎች', 'Change your password': 'የይለፍ ቃልዎን ይቀይሩ', 'For security you must set your own password before continuing.': 'ለደህንነት ሲባል ከመቀጠልዎ በፊት የራስዎን የይለፍ ቃል ማስቀመጥ አለብዎት።',
+  'Current password': 'አሁን ያለው የይለፍ ቃል', 'New password (min 6 characters)': 'አዲስ የይለፍ ቃል (ቢያንስ 6 ቁምፊዎች)', 'Repeat new password': 'አዲሱን የይለፍ ቃል ይድገሙ', 'Save new password': 'አዲሱን የይለፍ ቃል አስቀምጥ', 'Password changed': 'የይለፍ ቃል ተቀይሯል',
+  'Cancel': 'ተወው', 'Admin': 'አስተዳዳሪ', 'Cashier': 'ገንዘብ ተቀባይ', 'admin': 'አስተዳዳሪ', 'cashier': 'ገንዘብ ተቀባይ', 'Loading…': 'በመጫን ላይ…', 'Save': 'አስቀምጥ', 'Close': 'ዝጋ', 'Done': 'ተጠናቋል', 'Confirm': 'አረጋግጥ', 'Edit': 'አርትዕ',
+  'Delete': 'አጥፋ', 'Download': 'አውርድ', 'Disable': 'አሰናክል', 'Enable': 'አንቃ', 'Active': 'ንቁ', 'Closed': 'ዝግ', 'closed': 'ተዘግቷል', 'open': 'ክፍት', 'Disabled': 'ታግዷል', 'Hidden': 'የተደበቀ', 'Free': 'ነፃ', 'never': 'በፍጹም', 'none': 'ምንም',
+  // dashboard
+  'Revenue': 'ገቢ', 'Profit': 'ትርፍ', 'Play time': 'የጨዋታ ጊዜ', 'Voided sales': 'የተሻሩ ሽያጮች', 'Sales': 'ሽያጭ', 'revenue − expenses': 'ገቢ − ወጪ', 'in drawer': 'በመሳቢያ ውስጥ', 'Right now': 'አሁን', 'No shifts open.': 'የተከፈተ ፈረቃ የለም።',
+  'Revenue vs expenses by day': 'ገቢ እና ወጪ በቀን', 'No activity in this period.': 'በዚህ ጊዜ ምንም እንቅስቃሴ የለም።', 'By branch': 'በቅርንጫፍ', 'Revenue by game': 'ገቢ በጨዋታ', 'Expense breakdown': 'የወጪ ዝርዝር', 'Payment methods': 'የክፍያ መንገዶች',
+  'Cashier performance': 'የገንዘብ ተቀባይ አፈጻጸም', 'No data for this period.': 'በዚህ ጊዜ ምንም መረጃ የለም።', 'Voids': 'የተሻሩ', 'Today': 'ዛሬ', 'Yesterday': 'ትላንት', 'This week': 'በዚህ ሳምንት', 'This month': 'በዚህ ወር', 'All branches': 'ሁሉም ቅርንጫፎች', 'Apply': 'ተግብር',
+  'You have never made a backup.': 'ምንም ምትኬ አላደረጉም።', 'Back up now': 'አሁን ምትኬ ያድርጉ', 'Cash expected': 'የሚጠበቅ ጥሬ ገንዘብ',
+  // photos
+  '📷 Machine photos': '📷 የማሽን ፎቶዎች', 'Photos taken live by cashiers, with the exact time printed on them. Tap a photo to enlarge it.': 'በገንዘብ ተቀባዮች በቀጥታ የተነሱ ፎቶዎች፤ ትክክለኛው ሰዓት በፎቶው ላይ ታትሟል። ለማሳደግ ፎቶውን ይንኩ።',
+  'No photos in this period.': 'በዚህ ጊዜ ምንም ፎቶ የለም።', 'Stamped time:': 'የታተመ ሰዓት፡', 'Received by server:': 'በሰርቨር የተቀበለበት፡', 'Clock mismatch': 'የሰዓት አለመጣጣም', '📷 Photos': '📷 ፎቶዎች', 'Full picture not found.': 'ሙሉ ምስሉ አልተገኘም።',
+  'The phone clock differs from the server time by more than 2 minutes. The stamped time may not be trustworthy.': 'የስልኩ ሰዓት ከሰርቨር ሰዓት ከ2 ደቂቃ በላይ ይለያል። የታተመው ሰዓት ላይታመን ይችላል።', 'Delete this photo?': 'ይህ ፎቶ ይጥፋ?', 'It will be removed permanently.': 'ለዘላለም ይወገዳል።', 'No photos for this shift.': 'ለዚህ ፈረቃ ፎቶ የለም።',
+  // cashier
+  'Start your shift': 'ፈረቃዎን ይጀምሩ', 'Count the cash in the drawer and photograph the machine. The photo is taken live and stamped with the exact time.': 'በመሳቢያ ውስጥ ያለውን ገንዘብ ይቁጠሩ እና ማሽኑን ፎቶ ያንሱ። ፎቶው በቀጥታ ይነሳል፤ ትክክለኛው ሰዓትም ይታተምበታል።',
+  'Machine photo (required)': 'የማሽን ፎቶ (ግዴታ)', 'Which machine?': 'የትኛው ማሽን?', 'Whole shop / other': 'መላው ሱቅ / ሌላ', '📷 Take photo of the machine': '📷 የማሽኑን ፎቶ አንሳ', 'Open shift': 'ፈረቃ ክፈት', 'Take at least one photo of the machine first': 'መጀመሪያ ቢያንስ አንድ የማሽን ፎቶ ያንሱ',
+  'Take a photo': 'ፎቶ ያንሱ', 'Point the camera at the machine, then press the button. The exact time is printed on the photo.': 'ካሜራውን ወደ ማሽኑ ያዙሩ፣ ከዚያ ቁልፉን ይጫኑ። ትክክለኛው ሰዓት በፎቶው ላይ ይታተማል።', '📷 Take photo': '📷 ፎቶ አንሳ',
+  'Camera blocked. Allow camera access for this site in your browser settings, then try again.': 'ካሜራ ታግዷል። በአሳሽ ቅንብሮች ውስጥ ለዚህ ጣቢያ የካሜራ ፈቃድ ይስጡ፣ ከዚያ እንደገና ይሞክሩ።', 'Camera is not ready yet': 'ካሜራው ገና ዝግጁ አይደለም',
+  'Shift opened': 'ፈረቃ ተከፍቷል', 'Sales this shift': 'የዚህ ፈረቃ ሽያጭ', '💰 Register a sale': '💰 ሽያጭ መዝግብ', 'Game': 'ጨዋታ', 'Machine / table': 'ማሽን / ጠረጴዛ', 'Machine / table (optional)': 'ማሽን / ጠረጴዛ (አማራጭ)', 'Hours played': 'የተጫወቱ ሰዓታት',
+  'Payment': 'ክፍያ', 'Note': 'ማስታወሻ', 'Note (optional)': 'ማስታወሻ (አማራጭ)', 'Register sale': 'ሽያጭ መዝግብ', 'Enter the amount received': 'የተቀበሉትን መጠን ያስገቡ', '⏱️ Timed stations': '⏱️ በሰዓት የሚከፈልባቸው ማሽኖች', 'Start': 'ጀምር',
+  'Stop & charge': 'አቁም እና ክፍያ ጠይቅ', 'Undo': 'ቀልብስ', 'Start timer': 'ሰዓት ቆጣሪ ጀምር', 'Customer': 'ደንበኛ', 'Customer name (optional)': 'የደንበኛ ስም (አማራጭ)', 'Amount due': 'የሚከፈል መጠን', 'Payment method': 'የክፍያ መንገድ', 'Confirm payment': 'ክፍያ አረጋግጥ',
+  'Cancel session?': 'ክፍለ ጊዜው ይሰረዝ?', 'This removes the session without charging.': 'ክፍያ ሳይጠየቅ ክፍለ ጊዜውን ያስወግዳል።', 'Cancel session': 'ክፍለ ጊዜ ሰርዝ', 'This station is already in use': 'ይህ ማሽን አስቀድሞ በአገልግሎት ላይ ነው', 'Session already stopped': 'ክፍለ ጊዜው አስቀድሞ ቆሟል',
+  'Time': 'ሰዓት', 'Details': 'ዝርዝር', 'Amount': 'መጠን', 'Void': 'ሽር', 'voided': 'ተሽሯል', 'No sales yet.': 'እስካሁን ሽያጭ የለም።', 'Void this sale?': 'ይህ ሽያጭ ይሻር?', 'Reason': 'ምክንያት', 'Reason (required)': 'ምክንያት (ግዴታ)', 'A reason is required': 'ምክንያት ያስፈልጋል',
+  'Record an expense': 'ወጪ መዝግብ', 'Category': 'ምድብ', 'Paid from': 'የተከፈለው ከ', 'Save expense': 'ወጪ አስቀምጥ', 'What was it for?': 'ለምን ነበር?', 'This shift': 'ይህ ፈረቃ', 'No expenses recorded yet.': 'እስካሁን ወጪ አልተመዘገበም።', 'Expense saved': 'ወጪ ተመዝግቧል',
+  'Remove': 'አስወግድ', 'Remove expense?': 'ወጪው ይወገድ?', 'Open your shift on the Counter tab first.': 'መጀመሪያ በ"መሸጫ" ገጽ ፈረቃዎን ይክፈቱ።', 'Enter a valid amount': 'ትክክለኛ መጠን ያስገቡ', 'No shifts open': 'የተከፈተ ፈረቃ የለም',
+  'Shift summary': 'የፈረቃ ማጠቃለያ', 'Cash that should be in drawer': 'በመሳቢያ ውስጥ መኖር ያለበት ገንዘብ', 'Close shift': 'ፈረቃ ዝጋ', 'Count all the cash in the drawer, then enter it. Differences are reported to the admin.': 'በመሳቢያ ውስጥ ያለውን ገንዘብ በሙሉ ይቁጠሩ፣ ከዚያ ያስገቡ። ልዩነቶች ለአስተዳዳሪው ይደርሳሉ።',
+  'Cash counted in drawer': 'በመሳቢያ የተቆጠረ ገንዘብ', 'Note for the admin (optional)': 'ለአስተዳዳሪው ማስታወሻ (አማራጭ)', 'Close your shift?': 'ፈረቃዎን ይዝጉ?', 'You will not be able to add more sales or expenses to it.': 'ከዚህ በኋላ ሽያጭ ወይም ወጪ መጨመር አይችሉም።',
+  'Shift closed': 'ፈረቃ ተዘግቷል', 'Expected cash': 'የሚጠበቅ ገንዘብ', 'Counted': 'የተቆጠረ', 'Cash matches perfectly.': 'ገንዘቡ በትክክል ተመሳስሏል።', 'Enter the cash you counted': 'የቆጠሩትን ገንዘብ ያስገቡ', 'Stop all running sessions before closing the shift': 'ፈረቃውን ከመዝጋትዎ በፊት ሁሉንም የሚሄዱ ክፍለ ጊዜዎች ያቁሙ',
+  'Send another photo': 'ሌላ ፎቶ ላክ', 'Any time during the shift you can send a fresh, time-stamped photo of a machine to the admin.': 'በፈረቃ ጊዜ በማንኛውም ሰዓት አዲስ ሰዓት የታተመበት የማሽን ፎቶ ለአስተዳዳሪው መላክ ይችላሉ።', 'Photo sent to the admin': 'ፎቶው ለአስተዳዳሪው ተልኳል',
+  'Opening cash must be a number': 'መነሻ ገንዘብ ቁጥር መሆን አለበት', 'You already have an open shift': 'አስቀድሞ የተከፈተ ፈረቃ አለዎት', 'Your branch is not active. Contact the admin.': 'ቅርንጫፍዎ ንቁ አይደለም። አስተዳዳሪውን ያነጋግሩ።', 'No games are set up yet. Ask the admin.': 'እስካሁን ምንም ጨዋታ አልተዘጋጀም። አስተዳዳሪውን ይጠይቁ።',
+  // admin: shifts / transactions
+  'Shift reports': 'የፈረቃ ሪፖርቶች', 'Opened': 'የተከፈተ', 'Status': 'ሁኔታ', 'Difference': 'ልዩነት', 'Export CSV': 'CSV ላክ', 'Record an expense for a branch (rent, salaries, etc.)': 'ለቅርንጫፍ ወጪ መዝግብ (ኪራይ፣ ደመወዝ ወዘተ)', 'Branch': 'ቅርንጫፍ', 'Add expense': 'ወጪ ጨምር', 'Expense added': 'ወጪ ተጨምሯል',
+  'Head-office costs count in profit but not in any cashier’s drawer.': 'የዋና ቢሮ ወጪዎች በትርፍ ውስጥ ይቆጠራሉ፣ ነገር ግን በገንዘብ ተቀባይ መሳቢያ ውስጥ አይደሉም።', 'By': 'በ', 'No records in this period.': 'በዚህ ጊዜ ምንም መዝገብ የለም።', 'No shifts in this period.': 'በዚህ ጊዜ ምንም ፈረቃ የለም።',
+  'Nothing to export': 'ለመላክ ምንም የለም', 'Choose a branch': 'ቅርንጫፍ ይምረጡ', 'Voids, cancelled sessions, price changes and other sensitive actions (latest 200).': 'ሽሮች፣ የተሰረዙ ክፍለ ጊዜዎች፣ የዋጋ ለውጦች እና ሌሎች ወሳኝ ድርጊቶች (የቅርብ 200)።', 'Paid from ': 'የተከፈለው ከ ',
+  // branches / staff
+  'Add a branch': 'ቅርንጫፍ ጨምር', 'Add branch': 'ቅርንጫፍ ጨምር', 'Branch name': 'የቅርንጫፍ ስም', 'Location': 'አድራሻ', 'Location (optional)': 'አድራሻ (አማራጭ)', 'Name': 'ስም', 'Edit branch': 'ቅርንጫፍ አርትዕ', 'Branch is active': 'ቅርንጫፉ ንቁ ነው', 'Branch added': 'ቅርንጫፍ ተጨምሯል',
+  'Branch name required': 'የቅርንጫፍ ስም ያስፈልጋል', 'A branch with that name already exists': 'በዚህ ስም ቅርንጫፍ አስቀድሞ አለ',
+  'Staff logins': 'የሠራተኞች መግቢያዎች', 'Add staff login': 'የሠራተኛ መግቢያ ጨምር', 'Full name': 'ሙሉ ስም', 'Email (optional)': 'ኢሜይል (አማራጭ)', 'Optional real email (enables password reset email)': 'አማራጭ እውነተኛ ኢሜይል (የይለፍ ቃል ማስተካከያ ኢሜይል ያስችላል)',
+  'Starting password': 'መጀመሪያ የይለፍ ቃል', 'Role': 'ሚና', 'Branch (cashiers)': 'ቅርንጫፍ (ለገንዘብ ተቀባዮች)', 'Create login': 'መግቢያ ፍጠር', 'Staff must set their own password at first login.': 'ሠራተኞች በመጀመሪያ ሲገቡ የራሳቸውን የይለፍ ቃል ማስቀመጥ አለባቸው።',
+  'Login created. Share the username and password with them.': 'መግቢያው ተፈጥሯል። የተጠቃሚ ስሙን እና የይለፍ ቃሉን ያካፍሏቸው።', 'Account is active': 'መለያው ንቁ ነው', 'Send password reset email': 'የይለፍ ቃል ማስተካከያ ኢሜይል ላክ', 'Password reset email sent': 'የይለፍ ቃል ማስተካከያ ኢሜይል ተልኳል',
+  'Lost password? Disable this login and create a new one (history stays).': 'የይለፍ ቃል ጠፍቷል? ይህን መግቢያ ያግዱና አዲስ ይፍጠሩ (ታሪኩ ይቆያል)።', 'This login has no real email. Disable it and create a new login instead.': 'ይህ መግቢያ እውነተኛ ኢሜይል የለውም። ይልቁንም ያግዱትና አዲስ መግቢያ ይፍጠሩ።',
+  'Name and username required': 'ስም እና የተጠቃሚ ስም ያስፈልጋል', 'Username cannot contain spaces': 'የተጠቃሚ ስም ባዶ ቦታ መያዝ የለበትም', 'Cashiers must be assigned to a branch': 'ገንዘብ ተቀባዮች ለአንድ ቅርንጫፍ መመደብ አለባቸው', 'Saved': 'ተቀምጧል',
+  "You can't disable or demote your own account": 'የራስዎን መለያ ማገድ ወይም ማውረድ አይችሉም', 'This cashier has an open shift. Ask them to close it first.': 'ይህ ገንዘብ ተቀባይ የተከፈተ ፈረቃ አለው። መጀመሪያ እንዲዘጋ ይጠይቁት።',
+  // games
+  'Games': 'ጨዋታዎች', 'Each game has its own pricing style, so you can add any new game without changing the system. Price changes only affect future sales.': 'እያንዳንዱ ጨዋታ የራሱ የዋጋ ዓይነት አለው፣ ስለዚህ ሲስተሙን ሳይቀይሩ ማንኛውንም አዲስ ጨዋታ መጨመር ይችላሉ። የዋጋ ለውጥ የሚነካው ወደፊት የሚደረጉ ሽያጮችን ብቻ ነው።',
+  'Pricing': 'የዋጋ ዓይነት', 'Price': 'ዋጋ', 'Add a new game': 'አዲስ ጨዋታ ጨምር', 'Pricing style': 'የዋጋ ዓይነት', 'Add game': 'ጨዋታ ጨምር', 'Unit name': 'የአሃድ ስም', 'Billing step (minutes)': 'የክፍያ ደረጃ (ደቂቃ)', 'Per hour (timer)': 'በሰዓት (ቆጣሪ)', 'Per credit / coin': 'በክሬዲት / ሳንቲም',
+  'Fixed price per play': 'ቋሚ ዋጋ በጨዋታ', 'Price per hour': 'ዋጋ በሰዓት', 'Available to cashiers': 'ለገንዘብ ተቀባዮች ይገኛል', 'Stations (machines / tables) per branch': 'ማሽኖች / ጠረጴዛዎች በቅርንጫፍ', 'Add a station': 'ማሽን ጨምር', 'Add station': 'ማሽን ጨምር', 'Station': 'ማሽን', 'No stations yet.': 'እስካሁን ማሽን የለም።',
+  'Game added': 'ጨዋታ ተጨምሯል', 'Station added': 'ማሽን ተጨምሯል', 'Game name required': 'የጨዋታ ስም ያስፈልጋል', 'A game with that name already exists': 'በዚህ ስም ጨዋታ አስቀድሞ አለ', 'Price must be a number': 'ዋጋ ቁጥር መሆን አለበት', 'Station name required': 'የማሽን ስም ያስፈልጋል', 'Choose a branch and a game': 'ቅርንጫፍ እና ጨዋታ ይምረጡ',
+  'That branch already has a station with this name': 'ይህ ቅርንጫፍ በዚህ ስም ማሽን አስቀድሞ አለው', 'Check the name and price': 'ስሙን እና ዋጋውን ያረጋግጡ', 'A session is running on this station': 'በዚህ ማሽን ላይ ክፍለ ጊዜ እየሄደ ነው', 'Billing step must be 1-120 minutes': 'የክፍያ ደረጃ ከ1-120 ደቂቃ መሆን አለበት',
+  'e.g. Air Hockey, Pool, VR': 'ለምሳሌ ኤር ሆኪ፣ ፑል፣ ቪአር', 'e.g. PS5 #2, Fish Table B': 'ለምሳሌ PS5 #2፣ የዓሣ ጠረጴዛ B', 'e.g. coin, play, game': 'ለምሳሌ ሳንቲም፣ ጨዋታ', 'e.g. hana (no spaces)': 'ለምሳሌ hana (ባዶ ቦታ የለም)',
+  // settings & defaults
+  'Currency label': 'የገንዘብ ምልክት', 'Payment methods (one per line; Cash is always kept)': 'የክፍያ መንገዶች (በእያንዳንዱ መስመር አንድ፤ ጥሬ ገንዘብ ሁልጊዜ ይቆያል)', 'Expense categories (one per line)': 'የወጪ ምድቦች (በእያንዳንዱ መስመር አንድ)', 'Save settings': 'ቅንብሮችን አስቀምጥ', 'Settings saved': 'ቅንብሮች ተቀምጠዋል',
+  'Need at least one expense category': 'ቢያንስ አንድ የወጪ ምድብ ያስፈልጋል', 'Cash': 'ጥሬ ገንዘብ', 'M-Pesa': 'ኤም-ፔሳ', 'Other': 'ሌላ', 'Rent': 'ኪራይ', 'Electricity': 'ኤሌክትሪክ', 'Internet': 'ኢንተርኔት', 'Salaries': 'ደመወዝ', 'Repairs & Maintenance': 'ጥገና', 'Supplies': 'አቅርቦቶች', 'Prize Payout': 'የሽልማት ክፍያ', 'Transport': 'ትራንስፖርት',
+  // backup / restore / erase
+  '💾 Backup': '💾 ምትኬ', 'Downloads all your records (sales, expenses, shifts, staff, games, settings, photo thumbnails) as one file. Keep it somewhere safe, for example Google Drive or a flash disk. Do this every week.': 'ሁሉንም መዝገቦችዎን (ሽያጭ፣ ወጪ፣ ፈረቃዎች፣ ሠራተኞች፣ ጨዋታዎች፣ ቅንብሮች፣ የፎቶ ትናንሽ ምስሎች) በአንድ ፋይል ያወርዳል። በደህና ቦታ ለምሳሌ Google Drive ወይም ፍላሽ ዲስክ ያስቀምጡት። በየሳምንቱ ያድርጉት።',
+  'Last backup:': 'የመጨረሻ ምትኬ፡', 'Include full-size photos (bigger file)': 'ሙሉ መጠን ያላቸውን ፎቶዎች አካትት (ትልቅ ፋይል)', '⬇️ Download backup': '⬇️ ምትኬ አውርድ', '♻️ Restore': '♻️ መልስ', 'Put back records from a backup file made by this system. Nothing is deleted; matching records are overwritten.': 'በዚህ ሲስተም የተሰራ የምትኬ ፋይል መዝገቦችን መልሱ። ምንም አይጠፋም፤ ተመሳሳይ መዝገቦች ይተካሉ።',
+  'Backup file': 'የምትኬ ፋይል', 'Restore from backup file': 'ከምትኬ ፋይል መልስ', 'Restore': 'መልስ', 'Restore this backup?': 'ይህ ምትኬ ይመለስ?', 'Backup restored': 'ምትኬ ተመልሷል', 'Choose a backup file first': 'መጀመሪያ የምትኬ ፋይል ይምረጡ', 'This file is not a valid backup': 'ይህ ፋይል ትክክለኛ ምትኬ አይደለም', 'This file is not a Game Zone backup': 'ይህ ፋይል የጌም ዞን ምትኬ አይደለም',
+  '🗑️ Erase old data': '🗑️ ያረጁ መረጃዎችን አጥፋ', 'Frees space and keeps the system fast. Branches, games, machines, staff logins and settings are never erased. To remove a single wrong sale use Void instead, which keeps the audit trail.': 'ቦታ ያስለቅቃል፣ ሲስተሙንም ፈጣን ያደርጋል። ቅርንጫፎች፣ ጨዋታዎች፣ ማሽኖች፣ የሠራተኞች መግቢያዎች እና ቅንብሮች ፈጽሞ አይጠፉም። አንድ የተሳሳተ ሽያጭ ለማስወገድ ከዚህ ይልቅ "ሽር"ን ይጠቀሙ፤ ይህ የመዝገብ ዱካውን ይጠብቃል።',
+  'Photos only': 'ፎቶዎች ብቻ', 'Delete photos older than the date. Money records stay.': 'ከቀኑ በፊት ያሉ ፎቶዎችን አጥፋ። የገንዘብ መዝገቦች ይቆያሉ።', 'Everything older than the date': 'ከቀኑ በፊት ያለው ሁሉ', 'Sales, expenses, closed shifts, photos and activity log older than the date.': 'ከቀኑ በፊት ያሉ ሽያጮች፣ ወጪዎች፣ የተዘጉ ፈረቃዎች፣ ፎቶዎች እና የእንቅስቃሴ መዝገብ።',
+  'Fresh start': 'አዲስ ጅምር', 'Delete ALL sales, expenses, shifts, photos and activity log.': 'ሁሉንም ሽያጮች፣ ወጪዎች፣ ፈረቃዎች፣ ፎቶዎች እና የእንቅስቃሴ መዝገብ አጥፋ።', 'Delete records older than this date': 'ከዚህ ቀን በፊት ያሉ መዝገቦችን አጥፋ', 'Put full-size photos in the backup file too': 'ሙሉ መጠን ያላቸውን ፎቶዎችም በምትኬ ፋይል ውስጥ አስገባ',
+  'Your password': 'የእርስዎ የይለፍ ቃል', 'Your admin password': 'የአስተዳዳሪ የይለፍ ቃልዎ', 'Safety word': 'የደህንነት ቃል', 'Type ERASE': 'ERASE ብለው ይጻፉ', '🗑️ Download backup and erase': '🗑️ ምትኬ አውርድና አጥፋ', 'Download backup and erase': 'ምትኬ አውርድና አጥፋ', 'Erase permanently?': 'ለዘላለም ይጥፋ?', 'Data erased': 'መረጃው ጠፍቷል',
+  'Your password is wrong': 'የይለፍ ቃልዎ ትክክል አይደለም', 'Type ERASE to confirm': 'ለማረጋገጥ ERASE ብለው ይጻፉ', 'Nothing to erase for these settings.': 'ለእነዚህ ቅንብሮች የሚጠፋ ምንም ነገር የለም።', 'Close all open shifts first.': 'መጀመሪያ ሁሉንም የተከፈቱ ፈረቃዎች ይዝጉ።',
+  // errors from the system
+  'Wrong username or password': 'የተጠቃሚ ስም ወይም የይለፍ ቃል ትክክል አይደለም', 'Too many attempts. Wait a few minutes and try again.': 'ብዙ ሙከራዎች ተደርገዋል። ጥቂት ደቂቃዎች ይጠብቁና እንደገና ይሞክሩ።', 'That username/email is already taken': 'ይህ የተጠቃሚ ስም/ኢሜይል አስቀድሞ ተወስዷል', 'Password must be at least 6 characters': 'የይለፍ ቃል ቢያንስ 6 ቁምፊዎች መሆን አለበት',
+  'Not allowed. Check that the Firestore rules were published.': 'አይፈቀድም። የ Firestore ደንቦች መታተማቸውን ያረጋግጡ።', 'No internet connection': 'የኢንተርኔት ግንኙነት የለም', 'New passwords do not match': 'አዲሶቹ የይለፍ ቃሎች አይመሳሰሉም', 'New password must be at least 6 characters': 'አዲሱ የይለፍ ቃል ቢያንስ 6 ቁምፊዎች መሆን አለበት', 'Choose a different password': 'ሌላ የይለፍ ቃል ይምረጡ', 'Current password is wrong': 'አሁን ያለው የይለፍ ቃል ትክክል አይደለም',
+  'This account is disabled or not set up. Contact the admin.': 'ይህ መለያ ታግዷል ወይም አልተዘጋጀም። አስተዳዳሪውን ያነጋግሩ።', 'Enter your name and a valid email': 'ስምዎን እና ትክክለኛ ኢሜይል ያስገቡ',
+};
+const AMRE = [
+  [/^Cashier · (.+)$/, (m) => `ገንዘብ ተቀባይ · ${m[1]}`],
+  [/^(\d+) sales$/, (m) => `${m[1]} ሽያጮች`], [/^(\d+) (?:entry|entries)$/, (m) => `${m[1]} ግቤት`], [/^(\d+) (?:session|sessions)$/, (m) => `${m[1]} ክፍለ ጊዜ`],
+  [/^(\d+) timed session\(s\) running: (.*)$/, (m) => `${m[1]} በሰዓት የሚከፈል ክፍለ ጊዜ እየሄደ ነው፦ ${m[2]}`],
+  [/^Last backup was (\d+) days ago\.$/, (m) => `የመጨረሻው ምትኬ ከ${m[1]} ቀናት በፊት ነበር።`],
+  [/^Photos · (.+)$/, (m) => `ፎቶዎች · ${m[1]}`],
+  [/^Opening cash \((.+)\)$/, (m) => `መነሻ ጥሬ ገንዘብ (${m[1]})`], [/^Amount received \((.+)\)$/, (m) => `የተቀበሉት መጠን (${m[1]})`], [/^Amount \((.+)\)$/, (m) => `መጠን (${m[1]})`],
+  [/^Counted cash \((.+)\)$/, (m) => `የተቆጠረ ገንዘብ (${m[1]})`], [/^Price per unit \((.+)\)$/, (m) => `ዋጋ በአሃድ (${m[1]})`], [/^Price per hour \((.+)\)$/, (m) => `ዋጋ በሰዓት (${m[1]})`],
+  [/^Quantity \((.+)\)$/, (m) => `ብዛት (${m[1]})`], [/^Sale saved · (.+)$/, (m) => `ሽያጭ ተመዝግቧል · ${m[1]}`], [/^Sold (.+)$/, (m) => `ተሸጧል ${m[1]}`],
+  [/^Now: (.+)$/, (m) => `አሁን፡ ${m[1]}`], [/^Charged (.+)$/, (m) => `ተከፍሏል ${m[1]}`], [/^Stop (.+)$/, (m) => `አቁም፡ ${m[1]}`], [/^Start (.+)$/, (m) => `ጀምር፡ ${m[1]}`], [/^Edit (.+)$/, (m) => `አርትዕ፡ ${m[1]}`],
+  [/^Difference: (.+)$/, (m) => `ልዩነት፡ ${m[1]}`], [/^Sales · (.+)$/, (m) => `ሽያጭ · ${AM[m[1]] || m[1]}`], [/^Expenses paid from (.+)$/, (m) => `ከ${AM[m[1]] || m[1]} የተከፈለ ወጪ`],
+  [/^Opened (.+) with (.+)$/, (m) => `ተከፍቷል፡ ${m[1]} · መነሻ፡ ${m[2]}`], [/^· (\d+)-min steps$/, (m) => `· የ${m[1]} ደቂቃ ደረጃዎች`], [/^(.+) · started (.+)$/, (m) => `${m[1]} · የጀመረው ${m[2]}`],
+  [/^(.+) · (\d+(?:\.\d+)?) ?([A-Za-z]+)\/hr$/, (m) => `${m[1]} · ${m[2]} ${m[3]}/በሰዓት`],
+  [/^Pricing style: (.+) \(cannot be changed after creation\)\.$/, (m) => `የዋጋ ዓይነት፡ ${AM[m[1]] || m[1]} (ከተፈጠረ በኋላ አይቀየርም)።`],
+  [/^Backup saved \((\d+) records\)$/, (m) => `ምትኬ ተቀምጧል (${m[1]} መዝገቦች)`],
+  [/^(\d+) records from (.+) will be written back\. Records with the same ID are overwritten\. Nothing else is deleted\.$/, (m) => `${m[1]} መዝገቦች (${m[2]}) ይመለሳሉ። ተመሳሳይ መታወቂያ ያላቸው ይተካሉ። ሌላ ምንም አይጠፋም።`],
+  [/^This will delete: (.+)\. A backup file downloads first so you can restore it later\.$/, (m) => `ይህ ያጠፋል፡ ${m[1]}። የምትኬ ፋይል መጀመሪያ ይወርዳል፤ በኋላ መመለስ ይችላሉ።`],
+];
+const kpi = (label, value, sub, cls, icon) => h('div', { class: 'kpi' }, icon ? h('div', { class: 'ic' }, icon) : null, h('div', { class: 'l' }, label), h('div', { class: 'v ' + (cls || '') }, value), sub ? h('div', { class: 's' }, sub) : null);
+
+// ---------- theme + language (English / Amharic) ----------
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
+S.theme = lsGet('gz_theme') === 'light' ? 'light' : 'dark';
+S.lang = lsGet('gz_lang') === 'am' ? 'am' : 'en';
+document.documentElement.dataset.theme = S.theme;
+document.documentElement.lang = S.lang;
+
+function trs(s) {
+  if (S.lang !== 'am') return s;
+  const k = s.trim(); if (!k) return s;
+  if (AM[k]) return s.replace(k, AM[k]);
+  for (const [re, fn] of AMRE) { const m = k.match(re); if (m) { const r = fn(m); if (r) return s.replace(k, r); } }
+  return s;
+}
+const origText = new WeakMap();
+function retr(n) {
+  const rec = origText.get(n); const en = rec && n.nodeValue === rec.tr ? rec.en : n.nodeValue; const tr = trs(en);
+  origText.set(n, { en, tr }); if (n.nodeValue !== tr) n.nodeValue = tr;
+}
+function trAttrs(el) {
+  for (const a of ['placeholder', 'title']) {
+    const v = el.getAttribute(a); if (v === null) continue; const key = 'data-en-' + a;
+    if (!el.hasAttribute(key)) el.setAttribute(key, v);
+    const tr = trs(el.getAttribute(key)); if (tr !== v) el.setAttribute(a, tr);
+  }
+}
+function walkTr(root) {
+  if (root.nodeType === 3) return retr(root);
+  if (root.nodeType !== 1 || root.hasAttribute('data-notr') || /^(SCRIPT|STYLE|PRE|CODE|TEXTAREA)$/.test(root.tagName)) return;
+  trAttrs(root); root.childNodes.forEach(walkTr);
+}
+new MutationObserver((ms) => { if (S.lang !== 'am') return; for (const m of ms) { if (m.type === 'characterData') retr(m.target); else m.addedNodes.forEach(walkTr); } })
+  .observe(document.body, { childList: true, subtree: true, characterData: true });
+function tools() {
+  const th = h('button', { 'data-notr': '', title: 'Theme', onclick: () => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = S.theme; lsSet('gz_theme', S.theme); th.textContent = S.theme === 'dark' ? '☀️' : '🌙'; } }, S.theme === 'dark' ? '☀️' : '🌙');
+  const lg = h('button', { 'data-notr': '', title: 'Language / ቋንቋ', onclick: () => { S.lang = S.lang === 'am' ? 'en' : 'am'; lsSet('gz_lang', S.lang); document.documentElement.lang = S.lang; lg.textContent = S.lang === 'am' ? 'EN' : 'አማ'; walkTr(document.body); } }, S.lang === 'am' ? 'EN' : 'አማ');
+  return h('span', { class: 'tools' }, th, lg);
+}
+
+// ---------- misc helpers ----------
+const tsMs = (x) => (x && typeof x.toMillis === 'function' ? x.toMillis() : typeof x === 'number' ? x : 0);
+function downloadFile(name, text, type) { const a = h('a', { href: URL.createObjectURL(new Blob([text], { type })), download: name }); document.body.append(a); a.click(); a.remove(); }
+async function inChunks(items, fn, size = 15) { for (let i = 0; i < items.length; i += size) await Promise.all(items.slice(i, i + size).map(fn)); }
+
+// ---------- in-app camera (no file upload: the picture can only come from the live camera) ----------
+function capturePhoto(meta) {
+  return new Promise((resolve) => {
+    let stream = null; let done = false;
+    const video = h('video', { class: 'cam', autoplay: true, playsinline: true }); video.muted = true;
+    const msg = h('p', { class: 'muted small' }, 'Point the camera at the machine, then press the button. The exact time is printed on the photo.');
+    const shot = h('button', { class: 'btn primary block', style: 'margin-top:10px', disabled: true }, '📷 Take photo');
+    const finish = (r) => { if (done) return; done = true; if (stream) stream.getTracks().forEach((t) => t.stop()); close(); resolve(r); };
+    const close = modal('Take a photo', h('div', {}, msg, video, shot, h('button', { class: 'btn block', style: 'margin-top:8px', onclick: () => finish(null) }, 'Cancel')), { sticky: true });
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.className = 'err-box'; msg.textContent = 'This browser cannot open the camera. Use Chrome or Safari over https.'; }
+    else navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }, audio: false })
+      .then((s) => { if (done) { s.getTracks().forEach((t) => t.stop()); return; } stream = s; video.srcObject = s; video.play().catch(() => {}); shot.disabled = false; })
+      .catch((e) => { msg.className = 'err-box'; msg.textContent = e && e.name === 'NotAllowedError' ? 'Camera blocked. Allow camera access for this site in your browser settings, then try again.' : 'Camera not available: ' + (e && e.message || e); });
+    shot.onclick = () => {
+      const w = video.videoWidth, vh = video.videoHeight; if (!w || !vh) return toast('Camera is not ready yet', true);
+      const takenAt = Date.now(); const sc = Math.min(1, 1024 / w); const cw = Math.round(w * sc), ch = Math.round(vh * sc);
+      const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; const ctx = cv.getContext('2d'); ctx.drawImage(video, 0, 0, cw, ch);
+      const d = new Date(takenAt); const stamp = `${pad(d.getDate())} ${d.toLocaleString('en', { month: 'short' })} ${d.getFullYear()}   ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      const lines = [stamp, [meta.branch, meta.cashier].filter(Boolean).join('  ·  '), meta.label].filter(Boolean);
+      const fs = Math.max(14, Math.round(cw / 30)); const lh = fs * 1.35; const barH = lh * lines.length + fs * 0.5;
+      ctx.fillStyle = 'rgba(0,0,0,.68)'; ctx.fillRect(0, ch - barH, cw, barH); ctx.textBaseline = 'top';
+      lines.forEach((l, i) => { ctx.font = `${i === 0 ? '700' : '600'} ${fs}px system-ui,sans-serif`; ctx.fillStyle = i === 0 ? '#ffd23f' : '#ffffff'; ctx.fillText(l, fs * 0.5, ch - barH + fs * 0.35 + i * lh); });
+      const img = cv.toDataURL('image/jpeg', 0.72);
+      const tc = document.createElement('canvas'); tc.width = 240; tc.height = Math.round((240 * ch) / cw); tc.getContext('2d').drawImage(cv, 0, 0, tc.width, tc.height);
+      finish({ img, thumb: tc.toDataURL('image/jpeg', 0.6), takenAt, label: meta.label || '' });
+    };
+  });
+}
+// photos are stored in two places: "photos" (info + small thumbnail) and "photoData" (full picture)
+async function savePhotos(shiftId, list, kind, extra) {
+  for (let i = 0; i < list.length; i++) {
+    const p = list[i]; const id = `${shiftId}_${kind}_${kind === 'start' ? i : Date.now() + i}`;
+    await setDoc(D('photoData', id), { img: p.img });
+    await setDoc(D('photos', id), { shiftId, kind, takenAt: p.takenAt, serverAt: serverTimestamp(), thumb: p.thumb, branchId: S.user.branchId, branchName: branchName(S.user.branchId), cashierId: S.user.id, cashierName: S.user.name, stationId: p.stationId || null, stationName: p.stationName || '', ...(extra || {}) });
+  }
+}
+const clockOff = (p) => Math.abs(tsMs(p.serverAt) - p.takenAt) > 120000;
+function photoCard(p, onChange) {
+  return h('div', { class: 'ph' + (clockOff(p) ? ' flag' : ''), onclick: () => viewPhoto(p, onChange) }, h('img', { src: p.thumb, alt: '' }),
+    h('div', {}, h('b', {}, fmtDT(p.takenAt)), h('div', { class: 'muted' }, `${p.branchName} · ${p.cashierName}`), p.stationName ? h('div', { class: 'muted' }, p.stationName) : null, clockOff(p) ? h('span', { class: 'pill bad' }, 'Clock mismatch') : null));
+}
+async function viewPhoto(p, onChange) {
+  const box = h('div', {}, h('p', { class: 'muted' }, 'Loading…'));
+  const close = modal(`${p.branchName} · ${p.cashierName}`, box, { wide: true });
+  try {
+    const snap = await getDoc(D('photoData', p.id)); const img = snap.exists() ? snap.data().img : null;
+    box.replaceChildren(img ? h('div', { class: 'shot' }, h('img', { src: img, alt: 'machine photo' })) : h('p', { class: 'neg' }, 'Full picture not found.'),
+      h('p', { class: 'small' }, h('b', {}, 'Stamped time: '), fmtDT(p.takenAt), ' · ', h('b', {}, 'Received by server: '), tsMs(p.serverAt) ? fmtDT(tsMs(p.serverAt)) : '—', p.stationName ? ` · ${p.stationName}` : ''),
+      clockOff(p) ? h('div', { class: 'err-box' }, 'The phone clock differs from the server time by more than 2 minutes. The stamped time may not be trustworthy.') : null,
+      h('div', { class: 'row', style: 'justify-content:flex-end' },
+        img ? h('button', { class: 'btn', onclick: () => { const a = h('a', { href: img, download: `photo_${p.branchName}_${ymd(new Date(p.takenAt))}.jpg` }); document.body.append(a); a.click(); a.remove(); } }, 'Download') : null,
+        h('button', { class: 'btn danger', onclick: () => confirmBox('Delete this photo?', 'It will be removed permanently.', 'Delete', async () => { await deleteDoc(D('photos', p.id)); await deleteDoc(D('photoData', p.id)); await audit('delete_photo', p.id); close(); if (onChange) onChange(); }, true) }, 'Delete'),
+        h('button', { class: 'btn', onclick: () => close() }, 'Close')));
+  } catch (e) { box.replaceChildren(h('p', { class: 'neg' }, friendly(e))); }
+}
+async function shiftPhotosModal(shift) {
+  const box = h('div', {}, h('p', { class: 'muted' }, 'Loading…')); const close = modal(`Photos · ${shift.branchName} · ${shift.cashierName}`, box, { wide: true });
+  try {
+    const list = (await qlist('photos', where('shiftId', '==', shift.id))).sort((a, b) => a.takenAt - b.takenAt);
+    box.replaceChildren(list.length ? h('div', { class: 'photos' }, list.map((p) => photoCard(p, () => { close(); shiftPhotosModal(shift); }))) : h('p', { class: 'muted' }, 'No photos for this shift.'), h('button', { class: 'btn block', style: 'margin-top:12px', onclick: () => close() }, 'Close'));
+  } catch (e) { box.replaceChildren(h('p', { class: 'neg' }, friendly(e))); }
+}
 
 // ---------- setup guide (shown until the config above is filled in) ----------
 const configured = !String(FIREBASE_CONFIG.apiKey).startsWith('PASTE');
@@ -267,7 +524,7 @@ async function renderLogin(msg) {
   const go = () => guarded(btn, async () => { try { await signInWithEmailAndPassword(auth, toEmail(un.value), pw.value); } catch (e) { throw new Error(friendly(e)); } });
   btn.onclick = go; pw.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
   const holder = h('div', {});
-  $app.replaceChildren(h('div', { class: 'login' }, h('h1', {}, '🎮 Game Zone Manager'), h('p', { class: 'muted' }, 'Log in to continue'), msg ? h('div', { class: 'err-box' }, msg) : null, holder,
+  $app.replaceChildren(h('div', { class: 'floating-tools' }, tools()), h('div', { class: 'login' }, h('div', { class: 'hero' }, h('div', { class: 'ico' }, '🎮'), h('div', { class: 'big' }, 'Game Zone'), h('p', { class: 'muted' }, 'Log in to continue')), msg ? h('div', { class: 'err-box' }, msg) : null, holder,
     h('div', { class: 'card' }, field('Username', un), field('Password', pw), btn)));
   try {
     const st = await getDoc(D('settings', 'main'));
@@ -316,14 +573,14 @@ function renderChangePassword(forced) {
 const CASHIER_VIEWS = {}; const ADMIN_VIEWS = {};
 function render() {
   const isAdmin = S.user.role === 'admin';
-  const tabs = isAdmin ? [['dash', 'Dashboard'], ['shifts', 'Shifts'], ['tx', 'Transactions'], ['branches', 'Branches'], ['staff', 'Staff'], ['games', 'Games & Stations'], ['settings', 'Settings'], ['audit', 'Activity log']]
+  const tabs = isAdmin ? [['dash', 'Dashboard'], ['shifts', 'Shifts'], ['tx', 'Transactions'], ['branches', 'Branches'], ['staff', 'Staff'], ['games', 'Games & Stations'], ['photos', 'Photos'], ['data', 'Backup & erase'], ['settings', 'Settings'], ['audit', 'Activity log']]
     : [['counter', 'Counter'], ['expenses', 'Expenses'], ['shift', 'My shift']];
   if (!S.tab || !tabs.some((t) => t[0] === S.tab)) S.tab = tabs[0][0];
   const main = h('main', {});
   const nav = h('div', { class: 'nav' }, tabs.map(([id, label]) => h('button', { class: S.tab === id ? 'on' : '', onclick: () => { S.tab = id; render(); } }, label)));
   const top = h('div', { class: 'topbar' }, h('span', { class: 'logo' }, '🎮 Game Zone'),
     h('div', { class: 'who' }, h('div', {}, S.user.name, ' · ', isAdmin ? 'Admin' : `Cashier · ${branchName(S.user.branchId)}`),
-      h('a', { href: '#', onclick: (e) => { e.preventDefault(); renderChangePassword(false); } }, 'Password'), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); doLogout(); } }, 'Log out')));
+      h('a', { href: '#', onclick: (e) => { e.preventDefault(); renderChangePassword(false); } }, 'Password'), ' · ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); doLogout(); } }, 'Log out')), tools());
   $app.replaceChildren(top, nav, main);
   clearInterval(S.tick);
   main.append(h('p', { class: 'muted' }, 'Loading…'));
@@ -352,26 +609,70 @@ function totalsFor(shift, sales, exps) {
 function billing(minElapsed, rate, inc) { const m = Math.max(1, minElapsed); const billed = Math.ceil(m / inc) * inc; return { billed, amount: r2((billed / 60) * rate) }; }
 const hms = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60].map((x) => pad(x)).join(':'); };
 
+function openShiftScreen(main) {
+  const photos = []; const branch = branchName(S.user.branchId);
+  const allSt = S.stations.filter((s) => s.branchId === S.user.branchId && s.active);
+  const cash = h('input', { type: 'number', min: 0, step: 'any', value: 0, inputmode: 'decimal' });
+  const mach = select([['', 'Whole shop / other'], ...allSt.map((s) => [s.id, s.name])], '');
+  const strip = h('div', { class: 'photos', style: 'margin:10px 0' });
+  const draw = () => strip.replaceChildren(...photos.map((p, i) => h('div', { class: 'shot' }, h('img', { src: p.thumb, alt: '' }), h('button', { class: 'btn sm danger', onclick: () => { photos.splice(i, 1); draw(); } }, '✕'), h('div', { class: 'small muted' }, p.stationName || 'Shop'))));
+  const take = h('button', { class: 'btn block' }, '📷 Take photo of the machine');
+  take.onclick = async () => {
+    const st = allSt.find((s) => s.id === mach.value);
+    const r = await capturePhoto({ branch, cashier: S.user.name, label: st ? st.name : '' });
+    if (r) { r.stationId = st ? st.id : null; r.stationName = st ? st.name : ''; photos.push(r); draw(); }
+  };
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:14px' }, 'Open shift');
+  btn.onclick = () => guarded(btn, async () => {
+    const oc = num(cash.value); if (!(oc >= 0)) throw new Error('Opening cash must be a number');
+    if (!photos.length) throw new Error('Take at least one photo of the machine first');
+    const b = S.branches.find((x) => x.id === S.user.branchId); if (!b || !b.active) throw new Error('Your branch is not active. Contact the admin.');
+    if (await currentShift()) throw new Error('You already have an open shift');
+    const sid = doc(C('shifts')).id;
+    await savePhotos(sid, photos, 'start');
+    await setDoc(D('shifts', sid), { branchId: b.id, branchName: b.name, cashierId: S.user.id, cashierName: S.user.name, openedAt: Date.now(), openingCash: oc, status: 'open', startPhotos: photos.length });
+    await audit('open_shift', `${photos.length} photo(s)`); toast('Shift opened'); render();
+  });
+  main.replaceChildren(h('div', { class: 'card', style: 'max-width:480px;margin:auto' }, h('h2', {}, 'Start your shift'), h('p', { class: 'muted' }, 'Count the cash in the drawer and photograph the machine. The photo is taken live and stamped with the exact time.'),
+    field(`Opening cash (${S.cfg.currency})`, cash), h('h3', { style: 'margin-top:16px' }, 'Machine photo (required)'), field('Which machine?', mach), h('div', { style: 'margin-top:10px' }, take), strip, btn));
+}
+
+function saleForm(shift, myStations) {
+  const games = S.games.filter((g) => g.active);
+  if (!games.length) return h('div', { class: 'card empty' }, 'No games are set up yet. Ask the admin.');
+  let g = games[0]; let stSel = null;
+  const gameSel = select(games.map((x) => [x.id, x.name]), g.id);
+  const place = h('div', {}); const hint = h('div', { class: 'muted small', style: 'margin-top:6px' });
+  const amt = h('input', { type: 'number', min: 0, step: 'any', inputmode: 'decimal', placeholder: '0' });
+  const qty = h('input', { type: 'number', min: 0, step: 'any', inputmode: 'decimal' }); const qLabel = h('label', {}, '');
+  const pay = select(S.cfg.paymentMethods, 'Cash'); const note = h('input', { placeholder: 'Note (optional)', maxlength: 120 });
+  const chips = h('div', { class: 'row', style: 'margin:8px 0' }, [20, 50, 100, 200, 500, 1000].map((n) => h('button', { class: 'btn sm', onclick: () => { amt.value = n; amt.dispatchEvent(new Event('input')); } }, String(n))));
+  const setGame = () => {
+    g = games.find((x) => x.id === gameSel.value); qLabel.textContent = g.pricingType === 'time' ? 'Hours played' : `Quantity (${g.unitLabel}s)`;
+    const gst = myStations.filter((s) => s.gameId === g.id); stSel = gst.length ? select([['', 'Machine / table (optional)'], ...gst.map((s) => [s.id, s.name])], '') : null;
+    place.replaceChildren(stSel ? field('Machine / table', stSel) : null); hint.textContent = `${money(g.price)} / ${g.pricingType === 'time' ? 'hour' : g.unitLabel}`; amt.value = ''; qty.value = '';
+  };
+  gameSel.addEventListener('change', setGame); setGame();
+  amt.addEventListener('input', () => { const a = num(amt.value); qty.value = a > 0 && g.price > 0 ? String(r2(a / g.price)) : ''; });
+  qty.addEventListener('input', () => { const q = num(qty.value); amt.value = q > 0 ? String(r2(q * g.price)) : ''; });
+  const btn = h('button', { class: 'btn primary block', style: 'margin-top:12px' }, 'Register sale');
+  btn.onclick = () => guarded(btn, async () => {
+    const a = num(amt.value); if (!(a > 0) || a > 1e9) throw new Error('Enter the amount received');
+    let q = num(qty.value); if (!(q > 0)) q = g.price > 0 ? r2(a / g.price) : 1;
+    const st = stSel && stSel.value ? myStations.find((s) => s.id === stSel.value) : null;
+    await addDoc(C('sales'), { branchId: S.user.branchId, branchName: branchName(S.user.branchId), shiftId: shift.id, cashierId: S.user.id, cashierName: S.user.name, gameId: g.id, gameName: g.name, stationId: st ? st.id : null, stationName: st ? st.name : '', description: clean(note.value, 120), qty: q, unitPrice: g.price, amount: r2(a), minutes: 0, method: pay.value, createdAt: Date.now(), voided: false, voidReason: '' });
+    toast(`Sale saved · ${money(a)}`); render();
+  });
+  return h('div', { class: 'card' }, h('h2', {}, '💰 Register a sale'), h('div', { class: 'grid g2' }, h('div', {}, field('Game', gameSel), place, field(`Amount received (${S.cfg.currency})`, amt), chips), h('div', {}, qLabel, qty, hint, field('Payment', pay), field('Note', note))), btn);
+}
+
 async function cashierCounter(main) {
   const shift = await currentShift();
-  if (!shift) {
-    const cash = h('input', { type: 'number', min: 0, step: 'any', value: 0, inputmode: 'decimal' });
-    const btn = h('button', { class: 'btn primary block', style: 'margin-top:14px' }, 'Open shift');
-    btn.onclick = () => guarded(btn, async () => {
-      const oc = num(cash.value); if (!(oc >= 0)) throw new Error('Opening cash must be a number');
-      const b = S.branches.find((x) => x.id === S.user.branchId); if (!b || !b.active) throw new Error('Your branch is not active. Contact the admin.');
-      if (await currentShift()) throw new Error('You already have an open shift');
-      await addDoc(C('shifts'), { branchId: b.id, branchName: b.name, cashierId: S.user.id, cashierName: S.user.name, openedAt: Date.now(), openingCash: oc, status: 'open' });
-      await audit('open_shift'); toast('Shift opened'); render();
-    });
-    main.replaceChildren(h('div', { class: 'card', style: 'max-width:420px;margin:auto' }, h('h2', {}, 'Start your shift'), h('p', { class: 'muted' }, 'Count the cash in the drawer and enter it below.'), field(`Opening cash (${S.cfg.currency})`, cash), btn));
-    return;
-  }
+  if (!shift) return openShiftScreen(main);
   const [{ sales, totals: t }, live] = await Promise.all([shiftData(shift), qlist('live', where('branchId', '==', S.user.branchId))]);
   const liveBy = Object.fromEntries(live.map((l) => [l.stationId, l]));
   const myStations = S.stations.filter((s) => s.branchId === S.user.branchId && s.active && (gameOf(s.gameId) || {}).active);
   const timed = myStations.filter((s) => gameOf(s.gameId).pricingType === 'time');
-  const others = S.games.filter((g) => g.active && g.pricingType !== 'time');
 
   const timers = [];
   const stationCards = timed.map((st) => {
@@ -385,34 +686,27 @@ async function cashierCounter(main) {
   });
   timers.forEach((f) => f()); S.tick = setInterval(() => timers.forEach((f) => f()), 1000);
 
-  const gameCards = others.map((g) => {
-    const gst = myStations.filter((s) => s.gameId === g.id);
-    const qty = h('input', { type: 'number', min: 1, step: g.pricingType === 'credit' ? 'any' : 1, value: 1, inputmode: 'decimal' });
-    const pay = select(S.cfg.paymentMethods, 'Cash');
-    const stSel = gst.length ? select([['', 'Table / unit (optional)'], ...gst.map((s) => [s.id, s.name])], '') : null;
-    const total = h('b', {}); const upd = () => { total.textContent = money(r2((num(qty.value) || 0) * g.price)); }; qty.addEventListener('input', upd); upd();
-    const chips = (g.pricingType === 'credit' ? [5, 10, 20, 50, 100] : [1, 2, 3, 4, 5]).map((n) => h('button', { class: 'btn sm', onclick: () => { qty.value = n; upd(); } }, n));
-    const btn = h('button', { class: 'btn primary block', style: 'margin-top:10px' }, 'Record sale');
-    btn.onclick = () => guarded(btn, async () => {
-      const q = num(qty.value); if (!(q > 0) || q > 1e6) throw new Error('Enter a valid quantity');
-      const st = stSel && stSel.value ? gst.find((s) => s.id === stSel.value) : null;
-      await addDoc(C('sales'), { branchId: S.user.branchId, branchName: branchName(S.user.branchId), shiftId: shift.id, cashierId: S.user.id, cashierName: S.user.name, gameId: g.id, gameName: g.name, stationId: st ? st.id : null, stationName: st ? st.name : '', description: '', qty: q, unitPrice: g.price, amount: r2(q * g.price), minutes: 0, method: pay.value, createdAt: Date.now(), voided: false, voidReason: '' });
-      toast(`Sold ${fmt(q)} ${g.unitLabel} · ${money(r2(q * g.price))}`); render();
-    });
-    return h('div', { class: 'card', style: 'margin:0' }, h('div', { class: 'row sb' }, h('b', {}, g.name), h('span', { class: 'muted small' }, `${money(g.price)} / ${g.unitLabel}`)), h('div', { class: 'row', style: 'margin:8px 0' }, chips),
-      field(`Quantity (${g.unitLabel}s)`, qty), stSel ? field('Where', stSel) : null, field('Payment', pay), h('div', { class: 'row sb', style: 'margin-top:10px' }, h('span', { class: 'muted' }, 'Total'), total), btn);
-  });
-
   main.replaceChildren(
-    h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, kpi('Sales this shift', money(t.salesTotal)), kpi('Expenses', money(t.expTotal)), kpi('Cash expected', money(t.expectedCash), 'in drawer'), kpi('Shift opened', fmtTime(shift.openedAt))),
-    timed.length ? h('div', {}, h('h2', {}, 'Timed stations'), h('div', { class: 'grid gst', style: 'margin-bottom:16px' }, stationCards)) : null,
-    others.length ? h('div', {}, h('h2', {}, 'Sell credits / plays'), h('div', { class: 'grid g2', style: 'margin-bottom:16px' }, gameCards)) : null,
-    !timed.length && !others.length ? h('div', { class: 'card empty' }, 'No games or stations are set up for your branch yet. Ask the admin.') : null,
+    h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, kpi('Sales this shift', money(t.salesTotal), '', '', '💰'), kpi('Expenses', money(t.expTotal), '', '', '🧾'), kpi('Cash expected', money(t.expectedCash), 'in drawer', '', '🏦'), kpi('Shift opened', fmtTime(shift.openedAt), '', '', '⏱️')),
+    saleForm(shift, myStations),
+    timed.length ? h('div', {}, h('h2', {}, '⏱️ Timed stations'), h('div', { class: 'grid gst', style: 'margin-bottom:16px' }, stationCards)) : null,
     h('div', { class: 'card' }, h('h2', {}, 'Sales this shift'), sales.length ? h('div', { class: 'table-wrap' }, h('table', {},
       h('thead', {}, h('tr', {}, ['Time', 'Game', 'Details', 'Payment', 'Amount', ''].map((x, i) => h('th', { class: i === 4 ? 'num' : '' }, x)))),
       h('tbody', {}, sales.map((s) => h('tr', { class: s.voided ? 'void' : '' }, h('td', {}, fmtTime(s.createdAt)), h('td', {}, s.gameName, s.stationName ? ` · ${s.stationName}` : ''), h('td', { class: 'small' }, s.description || `${fmt(s.qty)} × ${fmt(s.unitPrice)}`), h('td', {}, s.method), h('td', { class: 'num' }, fmt(s.amount)),
         h('td', {}, s.voided ? h('span', { class: 'pill gray' }, 'voided') : h('button', { class: 'btn sm', onclick: () => reasonBox('Void this sale?', async (reason) => { await updateDoc(D('sales', s.id), { voided: true, voidReason: reason }); await audit('void_sale', `${s.gameName} ${s.amount}: ${reason}`); render(); }) }, 'Void'))))))) : h('p', { class: 'muted' }, 'No sales yet.')));
 }
+function extraPhotoCard(shift) {
+  const st = S.stations.filter((s) => s.branchId === S.user.branchId && s.active);
+  const mach = select([['', 'Whole shop / other'], ...st.map((s) => [s.id, s.name])], '');
+  const b = h('button', { class: 'btn block', style: 'margin-top:12px' }, '📷 Take photo');
+  b.onclick = () => guarded(b, async () => {
+    const s = st.find((x) => x.id === mach.value);
+    const r = await capturePhoto({ branch: branchName(S.user.branchId), cashier: S.user.name, label: s ? s.name : '' }); if (!r) return;
+    r.stationId = s ? s.id : null; r.stationName = s ? s.name : ''; await savePhotos(shift.id, [r], 'extra'); toast('Photo sent to the admin');
+  });
+  return h('div', { class: 'card' }, h('h2', {}, 'Send another photo'), h('p', { class: 'muted small' }, 'Any time during the shift you can send a fresh, time-stamped photo of a machine to the admin.'), field('Which machine?', mach), b);
+}
+
 function startModal(st, g, shift) {
   const name = h('input', { placeholder: 'Customer name (optional)', maxlength: 60 });
   const ok = h('button', { class: 'btn primary', onclick: () => guarded(ok, async () => {
@@ -476,12 +770,13 @@ async function cashierShift(main) {
     h('table', {}, h('tbody', {}, t.salesByMethod.map((m) => h('tr', {}, h('td', {}, `Sales · ${m.method}`), h('td', { class: 'num' }, fmt(m.total)))), t.expByMethod.map((m) => h('tr', {}, h('td', {}, `Expenses paid from ${m.method}`), h('td', { class: 'num' }, '−' + fmt(m.total)))),
       h('tr', {}, h('td', {}, h('b', {}, 'Cash that should be in drawer')), h('td', { class: 'num' }, h('b', {}, money(t.expectedCash))))))),
     h('div', { class: 'card' }, h('h2', {}, 'Close shift'), h('p', { class: 'muted small' }, 'Count all the cash in the drawer, then enter it. Differences are reported to the admin.'), field(`Counted cash (${S.cfg.currency})`, counted), field('Note', note), btn)));
+  main.append(extraPhotoCard(shift));
 }
 
 // ====================================================================
 // ADMIN
 // ====================================================================
-Object.assign(ADMIN_VIEWS, { dash: adminDash, shifts: adminShifts, tx: adminTx, branches: adminBranches, staff: adminStaff, games: adminGames, settings: adminSettings, audit: adminAudit });
+Object.assign(ADMIN_VIEWS, { dash: adminDash, shifts: adminShifts, tx: adminTx, branches: adminBranches, staff: adminStaff, games: adminGames, settings: adminSettings, audit: adminAudit, photos: adminPhotos, data: adminData });
 const PRICING_LABEL = { time: 'Per hour (timer)', credit: 'Per credit / coin', fixed: 'Fixed price per play' };
 const F = { from: null, to: null, branch: '', type: 'sales' };
 const initF = () => { if (!F.from) { F.from = todayStr(); F.to = todayStr(); } return F; };
@@ -506,6 +801,10 @@ function barList(rows, labelKey, valueKey, cls) {
 }
 function groupSum(arr, keyFn, valFn = (x) => x.amount) { const m = new Map(); arr.forEach((x) => { const k = keyFn(x); m.set(k, (m.get(k) || 0) + valFn(x)); }); return [...m.entries()].map(([k, v]) => ({ k, v: r2(v) })).sort((a, b) => b.v - a.v); }
 
+function backupBanner() {
+  const last = S.cfg.lastBackupAt || 0; const days = (Date.now() - last) / 864e5; if (last && days < 7) return null;
+  return h('div', { class: 'warn-box' }, last ? `Last backup was ${Math.floor(days)} days ago. ` : 'You have never made a backup. ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); S.tab = 'data'; render(); } }, 'Back up now'));
+}
 async function adminDash(main) {
   initF();
   const [{ sales, exps }, openShifts, live] = await Promise.all([fetchRange(), qlist('shifts', where('status', '==', 'open')), qlist('live')]);
@@ -520,10 +819,10 @@ async function adminDash(main) {
   const cashiers = {}; sales.forEach((s) => { const c = (cashiers[s.cashierId] = cashiers[s.cashierId] || { name: s.cashierName, n: 0, revenue: 0, voids: 0 }); if (s.voided) c.voids++; else { c.n++; c.revenue += s.amount; } });
   const byGame = groupSum(sv, (s) => s.gameName).map((x) => ({ name: x.k, revenue: x.v })), byCat = groupSum(ev, (e) => e.category).map((x) => ({ category: x.k, total: x.v })), byPay = groupSum(sv, (s) => s.method).map((x) => ({ method: x.k, total: x.v }));
   const openList = openShifts.filter((s) => !F.branch || s.branchId === F.branch);
-  main.replaceChildren(filterBar(() => render()),
-    h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, kpi('Revenue', money(revenue), `${sv.length} sales`), kpi('Expenses', money(expenses), `${ev.length} ${ev.length === 1 ? 'entry' : 'entries'}`), kpi('Profit', money(r2(revenue - expenses)), 'revenue − expenses', revenue - expenses >= 0 ? 'pos' : 'neg'),
-      kpi('Play time', `${fmt(playHours)} h`, `${timedSales.length} ${timedSales.length === 1 ? 'session' : 'sessions'}`), kpi('Voided sales', String(voids.length), voids.length ? money(r2(voids.reduce((a, s) => a + s.amount, 0))) : 'none', voids.length ? 'neg' : '')),
-    h('div', { class: 'card' }, h('h2', {}, 'Right now'), openList.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('tbody', {}, openList.map((s) => h('tr', {}, h('td', {}, h('span', { class: 'pill good' }, 'Open'), ' ', s.branchName), h('td', {}, s.cashierName), h('td', { class: 'muted small' }, 'since ' + fmtTime(s.openedAt)))))))
+  main.replaceChildren(backupBanner(), filterBar(() => render()),
+    h('div', { class: 'grid g4', style: 'margin-bottom:16px' }, kpi('Revenue', money(revenue), `${sv.length} sales`, '', '💰'), kpi('Expenses', money(expenses), `${ev.length} ${ev.length === 1 ? 'entry' : 'entries'}`, '', '🧾'), kpi('Profit', money(r2(revenue - expenses)), 'revenue − expenses', revenue - expenses >= 0 ? 'pos' : 'neg', '📈'),
+      kpi('Play time', `${fmt(playHours)} h`, `${timedSales.length} ${timedSales.length === 1 ? 'session' : 'sessions'}`, '', '🎮'), kpi('Voided sales', String(voids.length), voids.length ? money(r2(voids.reduce((a, s) => a + s.amount, 0))) : 'none', voids.length ? 'neg' : '', '⚠️')),
+    h('div', { class: 'card' }, h('h2', {}, 'Right now'), openList.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('tbody', {}, openList.map((s) => h('tr', {}, h('td', {}, h('span', { class: 'pill good' }, 'Open'), ' ', s.branchName), h('td', {}, s.cashierName), h('td', { class: 'muted small' }, 'since ' + fmtTime(s.openedAt)), h('td', {}, h('button', { class: 'btn sm', onclick: () => shiftPhotosModal(s) }, '📷 Photos')))))))
       : h('p', { class: 'muted' }, 'No shifts open.'), live.length ? h('p', { class: 'small muted', style: 'margin-top:8px' }, `${live.length} timed session(s) running: ` + live.map((x) => `${branchName(x.branchId)} ${x.stationName}`).join(', ')) : null),
     h('div', { class: 'card' }, h('h2', {}, 'Revenue vs expenses by day'), chart),
     h('div', { class: 'grid g2' }, h('div', { class: 'card', style: 'margin:0' }, h('h2', {}, 'By branch'), h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Branch'), h('th', { class: 'num' }, 'Revenue'), h('th', { class: 'num' }, 'Expenses'), h('th', { class: 'num' }, 'Profit'))),
@@ -538,11 +837,11 @@ async function adminShifts(main) {
   const f = dayMs(F.from), t = dayMs(F.to) + 864e5;
   const [shiftsAll, { sales, exps }] = await Promise.all([qlist('shifts', where('openedAt', '>=', f), where('openedAt', '<', t)), fetchRange(2)]);
   const rows = shiftsAll.filter((s) => !F.branch || s.branchId === F.branch).sort((a, b) => b.openedAt - a.openedAt);
-  main.replaceChildren(filterBar(() => render()), h('div', { class: 'card' }, h('h2', {}, 'Shift reports'), rows.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Opened', 'Branch', 'Cashier', 'Status', 'Sales', 'Expenses', 'Expected cash', 'Counted', 'Difference', 'Note'].map((x, i) => h('th', { class: i >= 4 && i < 9 ? 'num' : '' }, x)))),
+  main.replaceChildren(filterBar(() => render()), h('div', { class: 'card' }, h('h2', {}, 'Shift reports'), rows.length ? h('div', { class: 'table-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Opened', 'Branch', 'Cashier', 'Status', 'Sales', 'Expenses', 'Expected cash', 'Counted', 'Difference', 'Note', 'Photos'].map((x, i) => h('th', { class: i >= 4 && i < 9 ? 'num' : '' }, x)))),
     h('tbody', {}, rows.map((s) => {
       const ss = sales.filter((x) => x.shiftId === s.id), ee = exps.filter((x) => x.shiftId === s.id); const tot = totalsFor(s, ss, ee); const nv = ss.filter((x) => x.voided).length; const closed = s.status === 'closed';
       return h('tr', {}, h('td', { class: 'nowrap' }, fmtDT(s.openedAt)), h('td', {}, s.branchName), h('td', {}, s.cashierName), h('td', {}, h('span', { class: 'pill ' + (closed ? 'gray' : 'good') }, s.status)), h('td', { class: 'num' }, fmt(tot.salesTotal)), h('td', { class: 'num' }, fmt(tot.expTotal)),
-        h('td', { class: 'num' }, closed ? fmt(s.expectedCash) : '—'), h('td', { class: 'num' }, closed ? fmt(s.countedCash) : '—'), h('td', { class: 'num ' + (s.variance ? 'neg' : closed ? 'pos' : '') }, closed ? (s.variance > 0 ? '+' : '') + fmt(s.variance) : '—'), h('td', { class: 'small' }, s.note || '', nv ? h('span', { class: 'pill bad', style: 'margin-left:6px' }, `${nv} void`) : null));
+        h('td', { class: 'num' }, closed ? fmt(s.expectedCash) : '—'), h('td', { class: 'num' }, closed ? fmt(s.countedCash) : '—'), h('td', { class: 'num ' + (s.variance ? 'neg' : closed ? 'pos' : '') }, closed ? (s.variance > 0 ? '+' : '') + fmt(s.variance) : '—'), h('td', { class: 'small' }, s.note || '', nv ? h('span', { class: 'pill bad', style: 'margin-left:6px' }, `${nv} void`) : null), h('td', {}, h('button', { class: 'btn sm', onclick: () => shiftPhotosModal(s) }, `📷 ${s.startPhotos || ''}`)));
     })))) : h('p', { class: 'muted' }, 'No shifts in this period.')));
 }
 
@@ -679,6 +978,89 @@ async function adminSettings(main) {
 async function adminAudit(main) {
   const rows = (await qlist('audit')).sort((a, b) => b.createdAt - a.createdAt).slice(0, 200);
   main.replaceChildren(h('div', { class: 'card' }, h('h2', {}, 'Activity log'), h('p', { class: 'muted small' }, 'Voids, cancelled sessions, price changes and other sensitive actions (latest 200).'), h('div', { class: 'table-wrap' }, h('table', {}, h('tbody', {}, rows.map((r) => h('tr', {}, h('td', { class: 'nowrap small' }, fmtDT(r.createdAt)), h('td', {}, r.userName || '—'), h('td', {}, h('span', { class: 'pill gray' }, r.action)), h('td', { class: 'small muted' }, r.detail))))))));
+}
+
+// ---------- admin: photos ----------
+async function adminPhotos(main) {
+  initF(); const f = dayMs(F.from), t = dayMs(F.to) + 864e5;
+  const list = (await qlist('photos', where('takenAt', '>=', f), where('takenAt', '<', t))).filter((p) => !F.branch || p.branchId === F.branch).sort((a, b) => b.takenAt - a.takenAt);
+  main.replaceChildren(filterBar(() => render()), h('div', { class: 'card' }, h('h2', {}, '📷 Machine photos'), h('p', { class: 'muted small' }, 'Photos taken live by cashiers, with the exact time printed on them. Tap a photo to enlarge it.'),
+    list.length ? h('div', { class: 'photos' }, list.map((p) => photoCard(p, () => render()))) : h('p', { class: 'muted' }, 'No photos in this period.')));
+}
+
+// ---------- admin: backup / restore / erase ----------
+const BK_COLS = ['settings', 'branches', 'games', 'stations', 'users', 'shifts', 'sales', 'expenses', 'audit', 'photos'];
+const toPlain = (v) => (v && typeof v.toMillis === 'function' ? { __ts: v.toMillis() } : Array.isArray(v) ? v.map(toPlain) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, toPlain(x)])) : v);
+const fromPlain = (v) => (Array.isArray(v) ? v.map(fromPlain) : v && typeof v === 'object' ? (Object.keys(v).length === 1 && '__ts' in v ? v.__ts : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fromPlain(x)]))) : v);
+async function buildBackup(includeFull) {
+  const out = { app: 'gamezone', version: 2, createdAt: Date.now(), project: FIREBASE_CONFIG.projectId, collections: {} };
+  for (const c of BK_COLS) { const s = await getDocs(query(C(c))); out.collections[c] = Object.fromEntries(s.docs.map((d) => [d.id, toPlain(d.data())])); }
+  if (includeFull) { out.collections.photoData = {}; await inChunks(Object.keys(out.collections.photos), async (id) => { const d = await getDoc(D('photoData', id)); if (d.exists()) out.collections.photoData[id] = d.data(); }, 10); }
+  return out;
+}
+const F2 = { sales: 'createdAt', expenses: 'createdAt', shifts: 'openedAt', photos: 'takenAt', audit: 'createdAt' };
+async function erasePlan(mode, cutoff) {
+  const plan = {};
+  for (const c of mode === 'photos' ? ['photos'] : Object.keys(F2)) {
+    let docs = mode === 'all' ? await qlist(c) : await qlist(c, where(F2[c], '<', cutoff));
+    if (c === 'shifts') docs = docs.filter((d) => d.status === 'closed'); plan[c] = docs;
+  }
+  return plan;
+}
+async function adminData(main) {
+  const last = S.cfg.lastBackupAt;
+  const full = h('input', { type: 'checkbox', style: 'width:auto' });
+  const bBtn = h('button', { class: 'btn primary', style: 'margin-top:12px' }, '⬇️ Download backup');
+  bBtn.onclick = () => guarded(bBtn, async () => {
+    const b = await buildBackup(full.checked); const n = Object.values(b.collections).reduce((a, c) => a + Object.keys(c).length, 0);
+    downloadFile(`gamezone-backup-${ymd(new Date())}.json`, JSON.stringify(b), 'application/json');
+    await updateDoc(D('settings', 'main'), { lastBackupAt: Date.now() }); S.cfg.lastBackupAt = Date.now(); toast(`Backup saved (${n} records)`); render();
+  });
+  const file = h('input', { type: 'file', accept: '.json,application/json' }); const rBtn = h('button', { class: 'btn', style: 'margin-top:12px' }, 'Restore from backup file');
+  rBtn.onclick = () => guarded(rBtn, async () => {
+    if (!file.files[0]) throw new Error('Choose a backup file first');
+    let j; try { j = JSON.parse(await file.files[0].text()); } catch { throw new Error('This file is not a valid backup'); }
+    if (!j || j.app !== 'gamezone' || !j.collections) throw new Error('This file is not a Game Zone backup');
+    const cols = [...BK_COLS, 'photoData'].filter((c) => j.collections[c] && typeof j.collections[c] === 'object'); const n = cols.reduce((a, c) => a + Object.keys(j.collections[c]).length, 0);
+    confirmBox('Restore this backup?', `${n} records from ${j.createdAt ? fmtDT(j.createdAt) : 'an unknown date'} will be written back. Records with the same ID are overwritten. Nothing else is deleted.`, 'Restore', async () => {
+      for (const c of cols) await inChunks(Object.entries(j.collections[c]), ([id, data]) => setDoc(D(c, id), fromPlain(data)));
+      await audit('restore_backup', `${n} records`); await loadStatic(); toast('Backup restored'); render();
+    });
+  });
+
+  const mode = { v: 'photos' };
+  const opt = (v, title, text) => h('label', {}, h('input', { type: 'radio', name: 'emode', value: v, checked: v === mode.v, onchange: () => { mode.v = v; cutRow.style.display = v === 'all' ? 'none' : ''; } }), h('span', {}, h('b', {}, title), h('div', { class: 'small muted' }, text)));
+  const cut = h('input', { type: 'date', value: todayStr(-90) }); const cutRow = field('Delete records older than this date', cut);
+  const keepFull = h('input', { type: 'checkbox', checked: true, style: 'width:auto' });
+  const pw = h('input', { type: 'password', placeholder: 'Your admin password', autocomplete: 'current-password' }); const typed = h('input', { placeholder: 'Type ERASE' });
+  const eBtn = h('button', { class: 'btn danger', style: 'margin-top:12px' }, '🗑️ Download backup and erase');
+  eBtn.onclick = () => guarded(eBtn, async () => {
+    if (typed.value.trim().toUpperCase() !== 'ERASE') throw new Error('Type ERASE to confirm');
+    const u = auth.currentUser; try { await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, pw.value)); } catch { throw new Error('Your password is wrong'); }
+    if (mode.v !== 'photos' && (await qlist('shifts', where('status', '==', 'open'))).length) throw new Error('Close all open shifts first.');
+    const cutoff = dayMs(cut.value || todayStr(-90)); const plan = await erasePlan(mode.v, cutoff);
+    const summary = Object.entries(plan).filter(([, l]) => l.length).map(([c, l]) => `${l.length} ${c}`).join(', ');
+    if (!summary) throw new Error('Nothing to erase for these settings.');
+    confirmBox('Erase permanently?', `This will delete: ${summary}. A backup file downloads first so you can restore it later.`, 'Download backup and erase', async () => {
+      const bk = { app: 'gamezone', version: 2, partial: true, createdAt: Date.now(), project: FIREBASE_CONFIG.projectId, collections: {} };
+      for (const [c, l] of Object.entries(plan)) bk.collections[c] = Object.fromEntries(l.map(({ id, ...rest }) => [id, toPlain(rest)]));
+      if (plan.photos && plan.photos.length && keepFull.checked) { bk.collections.photoData = {}; await inChunks(plan.photos, async (p) => { const d = await getDoc(D('photoData', p.id)); if (d.exists()) bk.collections.photoData[p.id] = d.data(); }, 10); }
+      downloadFile(`gamezone-erased-${ymd(new Date())}.json`, JSON.stringify(bk), 'application/json');
+      for (const [c, l] of Object.entries(plan)) await inChunks(l, (d) => deleteDoc(D(c, d.id)));
+      if (plan.photos) await inChunks(plan.photos, (p) => deleteDoc(D('photoData', p.id)));
+      await audit('erase_data', `${mode.v}: ${summary}`); toast('Data erased'); render();
+    }, true);
+  });
+
+  main.replaceChildren(
+    h('div', { class: 'grid g2' },
+      h('div', { class: 'card' }, h('h2', {}, '💾 Backup'), h('p', { class: 'muted small' }, 'Downloads all your records (sales, expenses, shifts, staff, games, settings, photo thumbnails) as one file. Keep it somewhere safe, for example Google Drive or a flash disk. Do this every week.'),
+        h('p', {}, h('b', {}, 'Last backup: '), last ? fmtDT(last) : 'never'), h('label', { class: 'row', style: 'text-transform:none;letter-spacing:0;font-size:.9rem' }, full, ' Include full-size photos (bigger file)'), bBtn),
+      h('div', { class: 'card' }, h('h2', {}, '♻️ Restore'), h('p', { class: 'muted small' }, 'Put back records from a backup file made by this system. Nothing is deleted; matching records are overwritten.'), field('Backup file', file), rBtn)),
+    h('div', { class: 'card' }, h('h2', {}, '🗑️ Erase old data'), h('p', { class: 'muted small' }, 'Frees space and keeps the system fast. Branches, games, machines, staff logins and settings are never erased. To remove a single wrong sale use Void instead, which keeps the audit trail.'),
+      h('div', { class: 'seg' }, opt('photos', 'Photos only', 'Delete photos older than the date. Money records stay.'), opt('old', 'Everything older than the date', 'Sales, expenses, closed shifts, photos and activity log older than the date.'), opt('all', 'Fresh start', 'Delete ALL sales, expenses, shifts, photos and activity log.')),
+      cutRow, h('label', { class: 'row', style: 'text-transform:none;letter-spacing:0;font-size:.9rem' }, keepFull, ' Put full-size photos in the backup file too'),
+      h('div', { class: 'grid g2' }, field('Your password', pw), field('Safety word', typed)), eBtn));
 }
 </script>
 </body>
